@@ -1,0 +1,40 @@
+//Errores con bucles y Condicionales
+
+//No se puede asignar una variable a un bucle o un condicional
+let a  = while(a != 0) {
+    a = a - 1
+}
+
+a = if(a == 0){
+    a = 1;
+}
+else{
+    a = 0;
+}
+
+//Errores en las estructuras 
+if(a == 0){
+    a = 1;
+}
+else{
+    a = 0;
+
+if a == 0{
+    a = 1;
+}
+
+if(a == 0){
+    a = 1;
+
+while(a == 0){
+    a = 1;
+
+
+whilea == 0{
+    a = 1;
+}
+
+//Errores en las sentencias
+if(a == 0){
+    a = 1
+}

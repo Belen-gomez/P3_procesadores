@@ -1,0 +1,50 @@
+//funciones
+
+//Declaración
+function gte(a: int, b: int): boolean {
+    return a > b;
+}
+
+//Dentro de una funcion puede haber condicionales y bucles
+function mod(a: int, b: int): int {
+    if (a >= b) {
+        a = ab;
+    }
+    return a;
+}
+
+function greatest_common_divisor(a: int, b: int): int {
+    let temp;
+    while (!(b == 0)) {
+        temp = b;
+        b=mod(a, b);
+        a = temp;
+    }
+    return a;
+}
+
+//Las fumciones pueden tener la lista de argumentos vacia
+function get(): int {
+    return 0;
+}
+
+//Llamadas a funciones
+let a = get();
+b = gte(3, 4);
+
+ajson ={
+    "this is": get()
+};
+
+if (gte(var1.nested["prop2"], var2)) {
+    var3 = 'A';
+} else {
+    var3 = 'N';
+}
+
+let result = greatest_common_divisor (132, 0xFF);
+
+type Point = { x: int, y: int };
+function get_point_after_jump(point: Point): Point {
+    return { x: point.x, y: point.y + 10 };
+}

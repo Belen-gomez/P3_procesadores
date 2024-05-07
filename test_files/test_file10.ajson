@@ -1,0 +1,24 @@
+//Condicionales
+
+if (f2 == 3 || b1 && b2 || 10 -5 * il >= 0xFF *le-1) {
+    f2 = f2 - 3;
+}
+else {
+    f2 = 10+f1 * f1;
+}
+
+if({location: {
+        city: 'M', country: 'E',
+    },
+    price: {
+        euro: 100, "dollar": 108, "yen": 16397
+    },
+}){
+    car1 = 'h';
+}
+
+if( var1.prop1.prop2 * var1["prop1"]["prop2"]["prop2"]["prop2"]["prop"] && ('a' + 'a' )< (4 +5)|| true){
+    var1 = true;
+}else{
+    var1 = false;
+}

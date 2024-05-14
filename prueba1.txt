@@ -1,0 +1,7 @@
+let a = (3);
+let b:int;
+let c:float=8;
+
+let d = a, e = 6, f = 'I';
+
+//g = 0;

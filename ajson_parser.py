@@ -1,6 +1,7 @@
 import ply.yacc as yacc
 from ajson_lexer import LexerClass
 import sys
+from tabla_simbolos import TablaSimbolos
 
 class ParserClass:
     """
@@ -11,20 +12,31 @@ class ParserClass:
     def __init__(self):
         self.parser = yacc.yacc(module=self,  debug=True)
         self.lexer = LexerClass().lexer #se crea el lexer
-        self.symbols = {} #se crea el diccionario de simbolos
+        self.simbolos = TablaSimbolos() #se crea la tabla de simbolos
 
     # Define la precedencia y asociatividad de los operadores
     precedence = (
+        ('left', 'LE', 'LT', 'GE', 'GT', 'EQ'),
+        ('right', 'NOT'),
+        ('left', 'AND', 'OR'),
         ('left', 'SUMA', 'RESTA'),
         ('left', 'MUL', 'DIV'),
         ('left', 'USUMA', 'URESTA'),
-        ('left', 'LE', 'LT', 'GE', 'GT', 'EQ'),
-        ('right', 'NOT'),
-        ('left', 'AND', 'OR')
     )
 
     
-
+    # El valor de laas variables no es importante cuenado haya control de flujo. 
+    # En el control de flujo, la solucion mas facil es que el tipo de la variable sea el ultimo, la mas dificil que se guarden varias variables o algo asi
+    # Tabla de registros para registrar tipos complejos, tener la plantilla de como son los objetos que el desarrollador crea y ver si cuando se cree uno sigue esa plantilla. Cuando se degina un tipo con la plabra type se mete en la tabal de registros. Caundo se declara un objeto se usa la tabla de registros para comprobar que sigue la estructura
+    # Ejemplo: tyoe point = {int: x, int: y}
+    #           type line = {a: Point, b: Point}
+    #           este es el caso mas facil. En la tabla de registros hay tipos y campos 
+    # Caso mas dificil: type line = {a: {x:int}, b: {y:int}}
+    # Funciones: se comprueba que la expresion en return se corresponde con el tipo de salida. Tambien se correspone que los argumentos coincidan en tipo con los registrados. Las funciones por lo tanto van en la tabla de registros
+    # Puede haber funciones con el mismo nombre pero distintos tipos o numeros de argumentos.
+    # Las funciones se pueden crear en una tabla de registros (es una clase) o crear una tabla de funciones
+    # En los tipos ir del menos restrictivo al mas restrictivo
+    # ¿La tabla de simbolos es una clase?
     def p_program(self, p):
         """
         program :  statement
@@ -52,24 +64,37 @@ class ParserClass:
              | condition
              | loop
         """
+    
+    def p_entero(self, p):
+        """
+        entero : ENTERO
+        """
+        p[0] = [p[1], "int"]
 
+    def p_decimal(self, p):
+        """
+        decimal : DECIMAL
+        """
+        p[0] = [p[1], "float"]
+    
     def p_num(self, p):
         """
-        num : ENTERO
-            | DECIMAL
+        num : entero
+            | decimal
         """
-    
+        p[0] = p[1]
+
     def p_bool(self, p):
         """
         bool : TR
              | FL
         """
+        p[0] = [p[1], "bool"]
 
     def p_declaration(self, p):
         """
         declaration : LET id
-        """
-        
+        """ 
 
     def p_id(self, p):
         """
@@ -78,17 +103,29 @@ class ParserClass:
            | var IGUAL expr
            | var IGUAL expr COMA id
         """
-
-    
+        if len(p) == 2:
+            self.simbolos.agregar(p[1][0], p[1][1], None)
+        elif len(p) == 4:
+            if p[2] == ",":
+                self.simbolos.agregar(p[1][0], p[1][1], None)
+                p[0] = p[3]
+            else:
+                print(p[0], p[1], p[3])
+                self.simbolos.agregar(p[1][0], p[3][1], p[3][0])
+        else:
+            print(p[0], p[1], p[3])
+            self.simbolos.agregar(p[1][0], p[3][1], p[3][0])
+            p[0] = p[5]
+        
     def p_var(self, p):
         """
         var : CSINCOMILLAS
             | CSINCOMILLAS PUNTOS tipo
         """
         if len(p) == 2:
-            self.symbols[p[1]] = (None, None)
+            p[0] =  [p[1], None]
         else:
-            self.symbols[p[1]] = (p[3], None)
+            p[0] = [p[1], p[3]]
 
     def p_tipo(self, p):
         """
@@ -104,11 +141,26 @@ class ParserClass:
         """
         assignment : var IGUAL expr
         """
-        if p[1] not in self.symbols:
-            print("[ERROR][SEMANTIC] Error: variable %s no declarada", p[1])
-        else:
-            
-            self.symbols[p[1]] = (self.symbols[p[1]][0], p[3])
+        self.simbolos.asignar(p[1][0], p[3][1], p[3][0])
+
+    def p_variable(self, p):
+        """
+        variable : CSINCOMILLAS
+        """
+        valor, tipo = self.simbolos.obtener(p[1])
+        p[0] = [valor, tipo]
+    
+    def p_cadena(self, p):
+        """
+        cadena : CARACTER
+        """
+        p[0] = [p[1], "str"]
+    
+    def p_parentesis(self, p):
+        """
+        parentesis : LPARENT expr RPARENT
+        """
+        p[0] = p[2]
 
     def p_expr(self, p):
         """
@@ -116,17 +168,17 @@ class ParserClass:
               | num
               | bool
               | NULL  
-              | CSINCOMILLAS
+              | variable
               | RESTA expr %prec URESTA
               | SUMA expr %prec USUMA
-              | CARACTER
+              | cadena
               | ajson
-              | LPARENT expr RPARENT
+              | parentesis
               | punto
               | corchete
               | functioncall
         """
-        
+        p[0] = p[1]
 
     def p_operacion(self, p):
         """
@@ -134,7 +186,8 @@ class ParserClass:
                   | binaria
                   | comparation
         """
-    
+        p[0] = p[1]
+
     def p_aritmetica(self, p):
         """
         aritmetica : expr SUMA expr
@@ -142,7 +195,18 @@ class ParserClass:
                    | expr MUL expr %prec MUL
                    | expr DIV expr %prec DIV
         """
-    
+        if p[2] == "+":
+            if p[1][1] == "str" or p[3][1] == "str":
+                p[0] = [str(p[1][0]) + str(p[3][0]), "str"]
+            if p[1][1] == "float" and p[3][1] == "float":
+                p[0] = [p[1][0] + p[3][0], "float"]
+            else:
+                p[0] = [p[1][0] + p[3][0], "int"]
+        elif p[2] == "-":
+            if p[1][1] == "float" and p[3][1] == "float":
+                p[0] = [p[1][0] - p[3][0], "float"]
+            else:
+                p[0] = [p[1][0] - p[3][0], "int"]
     def p_binaria(self, p):
         """
         binaria : expr AND expr
@@ -277,3 +341,5 @@ class ParserClass:
         file = open(path)
         content = file.read()
         self.test(content)
+        output_file = path + ".symbols"
+        self.simbolos.guardar_tabla_simbolos(output_file)

@@ -1,6 +1,7 @@
-a, int, 3
+a, str, !
 b, int, None
 c, int, 8
+h, int, 2
 f, str, I
 e, int, 6
-d, int, 3
+d, str, !

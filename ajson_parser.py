@@ -197,13 +197,17 @@ class ParserClass:
         """
         if p[2] == "+":
             if p[1][1] == "str" or p[3][1] == "str":
-                p[0] = [str(p[1][0]) + str(p[3][0]), "str"]
-            if p[1][1] == "float" and p[3][1] == "float":
+                resultado_ascii = ord(p[1][0]) + ord(p[3][0])
+                p[0] = [chr(resultado_ascii %256), "str"]
+            elif p[1][1] == "float" or p[3][1] == "float":
                 p[0] = [p[1][0] + p[3][0], "float"]
             else:
                 p[0] = [p[1][0] + p[3][0], "int"]
         elif p[2] == "-":
-            if p[1][1] == "float" and p[3][1] == "float":
+            if p[1][1] == "str" or p[3][1] == "str":
+                resultado_ascii = ord(p[1][0]) - ord(p[3][0])
+                p[0] = [chr(resultado_ascii %256), "str"]
+            elif p[1][1] == "float" or p[3][1] == "float":
                 p[0] = [p[1][0] - p[3][0], "float"]
             else:
                 p[0] = [p[1][0] - p[3][0], "int"]

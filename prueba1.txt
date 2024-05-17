@@ -1,6 +1,7 @@
-let a = (3);
+let a = 'B' - '!';
 let b:int;
 let c:float=8;
+let h = 1 +1;
 
 let d = a, e = 6, f = 'I';
 

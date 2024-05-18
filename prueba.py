@@ -1,3 +1,5 @@
-c= "hola"
+c= 2
+a  = 2.0
 
-print(c.encode('ASCII'))
+
+print(c==a)

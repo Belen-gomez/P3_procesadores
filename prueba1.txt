@@ -1,8 +1,29 @@
-let a = 'B' - '!';
+let a = 'B' +2;
 let b:int;
 let c:float=8;
-let h = 1 +1;
+let h = 2 / 1;
+b = '!' + '!'; 
+c = 'B' + 2.5;
 
 let d = a, e = 6, f = 'I';
+e = 2 / 2.5;
+let i = b * e;
+let k = ----3;
+let j = 'B' + '!' + 1;
+let l = (2 + 3)*0 - 3;
+
+//binarias
+let m = tr;
+let n= fl;
+let o = m && n;
+let p = !o;
+let q = FL || FL;
+let r = TR || n;
+//let s = 8 || 2;
+
+//Comparaciones
+let t = 2<3;
+let u = t == tr;
+let v = 'B' == 'B';
 
 //g = 0;

@@ -154,7 +154,7 @@ class ParserClass:
         """
         cadena : CARACTER
         """
-        p[0] = [p[1], "str"]
+        p[0] = [p[1], "character"]
     
     def p_parentesis(self, p):
         """
@@ -162,6 +162,16 @@ class ParserClass:
         """
         p[0] = p[2]
 
+    def p_signos(self, p):
+        """
+        signos : SUMA expr %prec USUMA
+               | RESTA expr %prec URESTA
+        """
+        if p[1] == "+":
+            p[0] = [p[2][0], p[2][1]]
+        else:
+            p[0] = [-p[2][0], p[2][1]]
+    
     def p_expr(self, p):
         """
         expr : operacion
@@ -169,8 +179,7 @@ class ParserClass:
               | bool
               | NULL  
               | variable
-              | RESTA expr %prec URESTA
-              | SUMA expr %prec USUMA
+              | signos
               | cadena
               | ajson
               | parentesis
@@ -196,28 +205,121 @@ class ParserClass:
                    | expr DIV expr %prec DIV
         """
         if p[2] == "+":
-            if p[1][1] == "str" or p[3][1] == "str":
+            if p[1][1] == "float" or p[3][1] == "float":
+                if p[1][1] == "character":
+                     resultado_ascii = ord(p[1][0])
+                     p[0] = [resultado_ascii + p[3][0], "float"]
+                elif p[3][1] == "character":
+                    resultado_ascii = ord(p[3][0])
+                    p[0] = [resultado_ascii + p[1][0], "float"]
+                else:
+                    p[0] = [p[1][0] + p[3][0], "float"]
+                
+            elif p[1][1] == "int" or p[3][1] == "int":
+                if p[1][1] == "character":
+                     resultado_ascii = ord(p[1][0])
+                     p[0] = [resultado_ascii + p[3][0], "int"]
+                elif p[3][1] == "character":
+                    resultado_ascii = ord(p[3][0])
+                    p[0] = [resultado_ascii + p[1][0], "int"]
+                else:
+                    p[0] = [p[1][0] + p[3][0], "int"]
+
+            else:
                 resultado_ascii = ord(p[1][0]) + ord(p[3][0])
-                p[0] = [chr(resultado_ascii %256), "str"]
-            elif p[1][1] == "float" or p[3][1] == "float":
-                p[0] = [p[1][0] + p[3][0], "float"]
-            else:
-                p[0] = [p[1][0] + p[3][0], "int"]
+                p[0] = [chr(resultado_ascii %256), "character"]
+                print(p[0])
+
         elif p[2] == "-":
-            if p[1][1] == "str" or p[3][1] == "str":
-                resultado_ascii = ord(p[1][0]) - ord(p[3][0])
-                p[0] = [chr(resultado_ascii %256), "str"]
-            elif p[1][1] == "float" or p[3][1] == "float":
-                p[0] = [p[1][0] - p[3][0], "float"]
+            if p[1][1] == "float" or p[3][1] == "float":
+                if p[1][1] == "character":
+                     resultado_ascii = ord(p[1][0])
+                     p[0] = [resultado_ascii - p[3][0], "float"]
+                elif p[3][1] == "character":
+                    resultado_ascii = ord(p[3][0])
+                    p[0] = [resultado_ascii - p[1][0], "float"]
+                else:
+                    p[0] = [p[1][0] - p[3][0], "float"]
+                
+            elif p[1][1] == "int" or p[3][1] == "int":
+                if p[1][1] == "character":
+                     resultado_ascii = ord(p[1][0])
+                     p[0] = [resultado_ascii - p[3][0], "int"]
+                elif p[3][1] == "character":
+                    resultado_ascii = ord(p[3][0])
+                    p[0] = [resultado_ascii - p[1][0], "int"]
+                else:
+                    p[0] = [p[1][0] - p[3][0], "int"]
+
             else:
-                p[0] = [p[1][0] - p[3][0], "int"]
+                resultado_ascii = ord(p[1][0]) - ord(p[3][0])
+                p[0] = [chr(resultado_ascii %256), "character"]
+
+        elif p[2]=="*":
+            if p[1][1] == "float" or p[3][1] == "float":
+                if p[1][1] == "character":
+                     resultado_ascii = ord(p[1][0])
+                     p[0] = [resultado_ascii * p[3][0], "float"]
+                elif p[3][1] == "character":
+                    resultado_ascii = ord(p[3][0])
+                    p[0] = [resultado_ascii * p[1][0], "float"]
+                else:
+                    p[0] = [p[1][0] * p[3][0], "float"]
+                
+            elif p[1][1] == "int" or p[3][1] == "int":
+                if p[1][1] == "character":
+                     resultado_ascii = ord(p[1][0])
+                     p[0] = [resultado_ascii * p[3][0], "int"]
+                elif p[3][1] == "character":
+                    resultado_ascii = ord(p[3][0])
+                    p[0] = [resultado_ascii * p[1][0], "int"]
+                else:
+                    p[0] = [p[1][0] * p[3][0], "int"]
+
+            else:
+                resultado_ascii = ord(p[1][0]) * ord(p[3][0])
+                p[0] = [chr(resultado_ascii %256), "character"]
+        else:
+            if p[1][1] == "float" or p[3][1] == "float":
+                
+                if p[3][0] == 0:
+                    print("[parser] Parser error: Division por cero")
+                    sys.exit(1)
+                p[0] = [p[1][0] / p[3][0], "float"]
+                
+            else:
+                if p[3][0] == 0:
+                    print("[parser] Parser error: Division por cero")
+                    sys.exit(1)
+                else:
+                    p[0] = [p[1][0] / p[3][0], "int"]
+
+
     def p_binaria(self, p):
         """
         binaria : expr AND expr
                 | expr OR expr
                 | NOT expr
         """
-    
+        if p[2] == "&&":
+            if p[1][1] == "bool" and p[3][1] == "bool":
+                p[0] = [p[1][0] and p[3][0], "bool"]
+            else:
+                print("[parser] Parser error: Tipos no compatibles")
+                sys.exit(1)
+        elif p[2] == "||":
+            if p[1][1] == "bool" and p[3][1] == "bool":
+                p[0] = [p[1][0] or p[3][0], "bool"]
+            else:
+                print("[parser] Parser error: Tipos no compatibles")
+                sys.exit(1)
+        else:
+            if p[2][1] == "bool":
+                p[0] = [not p[2][0], "bool"]
+            else:
+                print("[parser] Parser error: Tipos no compatibles")
+                sys.exit(1)
+     
     def p_comparation(self, p):
         """
         comparation : expr LE expr
@@ -226,6 +328,52 @@ class ParserClass:
                     | expr GT expr
                     | expr EQ expr
         """
+        if p[2] == "==":
+            if p[1][1] == "bool" and p[3][1] == "bool":
+                p[0] = [p[1][0] == p[3][0], "bool"]
+
+            elif p[1][1] == "bool" or p[3][1] == "bool":
+                print("[parser] Parser error: Tipos no compatibles")
+                sys.exit(1)
+            
+            else:
+                if p[1][1] == "character":
+                    resultado1= ord(p[1][0])
+                else:
+                    resultado1 = p[1][0]
+                    
+                if p[3][1] == "character":
+                    resultado3 = ord(p[3][0])
+                else:
+                    resultado3 = p[3][0]
+                
+                p[0] = [resultado1 == resultado3, "bool"]
+            
+        else:
+            if p[1][1] == "bool" or p[3][1] == "bool":
+                print("[parser] Parser error: Tipos no compatibles")
+                sys.exit(1)
+            
+            if p[1][1] == "character":
+                resultado1= ord(p[1][0])
+            else:
+                resultado1 = p[1][0]
+                    
+            if p[3][1] == "character":
+                resultado3 = ord(p[3][0])
+            else:
+                resultado3 = p[3][0]
+            
+            if p[2] == "<":
+                p[0] = [resultado1 < resultado3, "bool"]
+            elif p[2] == ">":
+                p[0] = [resultado1 > resultado3, "bool"]
+            elif p[2] == "<=":
+                p[0] = [resultado1 <= resultado3, "bool"]
+            else:
+                p[0] = [resultado1 >= resultado3, "bool"]
+                    
+            
 
     def p_definicion_ajson(self, p):
         """

@@ -1,5 +1,12 @@
-No se escriben los caracteres raros
+
 Multiplicacion y division de caracteres
-cuando se enlazan operaciones, si hay una operacion con carecteres primero, se tiene que hacer el modulo de la operacion y luego el resto?
+
 En las divisiones con numeros enteros no tiene mucho sentido que el resultado sea entero si la division no es exacta
+
+
+
+
+//preguntar a amigos
+No se escriben los caracteres raros
+cuando se enlazan operaciones, si hay una operacion con carecteres primero, se tiene que hacer el modulo de la operacion y luego el resto?
 el not no funciona es raro

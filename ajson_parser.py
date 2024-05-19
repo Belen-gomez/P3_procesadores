@@ -2,6 +2,7 @@ import ply.yacc as yacc
 from ajson_lexer import LexerClass
 import sys
 from tabla_simbolos import TablaSimbolos
+from tabla_registros import TablaRegistros
 
 class ParserClass:
     """
@@ -13,12 +14,13 @@ class ParserClass:
         self.parser = yacc.yacc(module=self,  debug=True)
         self.lexer = LexerClass().lexer #se crea el lexer
         self.simbolos = TablaSimbolos() #se crea la tabla de simbolos
+        self.registros = TablaRegistros() #se crea la tabla de registros
 
     # Define la precedencia y asociatividad de los operadores
     precedence = (
-        ('left', 'LE', 'LT', 'GE', 'GT', 'EQ'),
         ('right', 'NOT'),
         ('left', 'AND', 'OR'),
+         ('left', 'LE', 'LT', 'GE', 'GT', 'EQ'),
         ('left', 'SUMA', 'RESTA'),
         ('left', 'MUL', 'DIV'),
         ('left', 'USUMA', 'URESTA'),
@@ -95,7 +97,12 @@ class ParserClass:
         """
         declaration : LET id
         """ 
-
+    
+    ''' def p_id_ajson(self, p):
+        """
+        id_ajson : var IGUAL ajson
+                    | var IGUAL ajson COMA id
+        """ '''
     def p_id(self, p):
         """
         id : var
@@ -111,10 +118,28 @@ class ParserClass:
                 p[0] = p[3]
             else:
                 print(p[0], p[1], p[3])
-                self.simbolos.agregar(p[1][0], p[3][1], p[3][0])
+                if(len(p[3]) == 2):
+                    self.simbolos.agregar(p[1][0], p[3][1], p[3][0])
+                else:
+                    if(not p[1][1]):
+                        print("[parser] Parser error: Tipo no definido")
+                        sys.exit(1)
+                       
+                    #Esto indica que es un ajson y el tipo tiene que ser el que se ha declarado en la variables
+                    self.registros.comprobar_estructura(p[1][1], p[3])
+                    self.simbolos.agregar(p[1][0], p[1][1], p[3][0])
         else:
             print(p[0], p[1], p[3])
-            self.simbolos.agregar(p[1][0], p[3][1], p[3][0])
+            if(len(p[3]) == 2):
+                    self.simbolos.agregar(p[1][0], p[3][1], p[3])
+            else:
+                if(not p[1][1]):
+                    print("[parser] Parser error: Tipo no definido")
+                    sys.exit(1)
+                    
+                #Esto indica que es un ajson y el tipo tiene que ser el que se ha declarado en la variables
+                self.registros.comprobar_estructura(p[1][1], p[3])
+                self.simbolos.agregar(p[1][0], p[1][1], p[3])
             p[0] = p[5]
         
     def p_var(self, p):
@@ -127,13 +152,20 @@ class ParserClass:
         else:
             p[0] = [p[1], p[3]]
 
+    def p_tipo_ajson(self, p):
+        """
+        tipo_ajson : CSINCOMILLAS
+        """
+        if (self.registros.buscar(p[1])):
+            p[0] = p[1]
+        
     def p_tipo(self, p):
         """
         tipo : INT
              | FLOAT
              | CHARACTER
              | BOOLEAN
-             | CSINCOMILLAS
+             | tipo_ajson
         """
         p[0] = p[1]
 
@@ -141,7 +173,12 @@ class ParserClass:
         """
         assignment : var IGUAL expr
         """
-        self.simbolos.asignar(p[1][0], p[3][1], p[3][0])
+        if(len(p[3]) == 2):
+            self.simbolos.asignar(p[1][0], p[3][1], p[3][0])
+        else:
+            valor, tipo = self.simbolos.obtener(p[1][0])   
+            self.registros.comprobar_estructura(tipo, p[3])        
+            self.simbolos.asignar(p[1][0], tipo, p[3])
 
     def p_variable(self, p):
         """
@@ -315,7 +352,11 @@ class ParserClass:
                 sys.exit(1)
         else:
             if p[2][1] == "bool":
-                p[0] = [not p[2][0], "bool"]
+                if p[2][0] == "tr":
+                    p[0] = ["fl", "bool"]
+                else:
+                    p[0] = ["tr", "bool"]
+
             else:
                 print("[parser] Parser error: Tipos no compatibles")
                 sys.exit(1)
@@ -330,7 +371,10 @@ class ParserClass:
         """
         if p[2] == "==":
             if p[1][1] == "bool" and p[3][1] == "bool":
-                p[0] = [p[1][0] == p[3][0], "bool"]
+                if (p[1][0] == p[3][0]):
+                    p[0] = ["tr", "bool"]
+                else:
+                    p[0] = ["fl", "bool"]
 
             elif p[1][1] == "bool" or p[3][1] == "bool":
                 print("[parser] Parser error: Tipos no compatibles")
@@ -346,8 +390,10 @@ class ParserClass:
                     resultado3 = ord(p[3][0])
                 else:
                     resultado3 = p[3][0]
-                
-                p[0] = [resultado1 == resultado3, "bool"]
+                if (resultado1 == resultado3):
+                    p[0] = ["tr", "bool"]
+                else:
+                    p[0] = ["fl", "bool"]
             
         else:
             if p[1][1] == "bool" or p[3][1] == "bool":
@@ -365,13 +411,26 @@ class ParserClass:
                 resultado3 = p[3][0]
             
             if p[2] == "<":
-                p[0] = [resultado1 < resultado3, "bool"]
+                if (resultado1 < resultado3):
+                    p[0] = ["tr", "bool"]
+                else:
+                    p[0] = ["fl", "bool"]
+                
             elif p[2] == ">":
-                p[0] = [resultado1 > resultado3, "bool"]
+                if (resultado1 > resultado3):
+                    p[0] = ["tr", "bool"]
+                else:
+                    p[0] = ["fl", "bool"]
             elif p[2] == "<=":
-                p[0] = [resultado1 <= resultado3, "bool"]
+                if (resultado1 <= resultado3):
+                    p[0] = ["tr", "bool"]
+                else:
+                    p[0] = ["fl", "bool"]
             else:
-                p[0] = [resultado1 >= resultado3, "bool"]
+                if (resultado1 >= resultado3):
+                    p[0] = ["tr", "bool"]
+                else:
+                    p[0] = ["fl", "bool"]
                     
             
 
@@ -379,51 +438,81 @@ class ParserClass:
         """
         definicion_ajson : TYPE CSINCOMILLAS IGUAL ajson_t
         """
+        self.registros.agregar_registro(p[2], p[4])
 
     def p_ajson_t(self, p):
         """
         ajson_t : LBRACKET object_t RBRACKET
         """
+        p[0] = p[2]
+        print(p[0])
+
     def p_object_t(self, p):
         """
         object_t : pair_t COMA object_t
                  | pair_t COMA
                  | pair_t
         """
+        if len(p) == 2 or len(p) == 3:
+            p[0] = p[1]
+        else:
+            p[0] = {**p[1], **p[3]}
+
     def p_pair_t(self, p):
         """
         pair_t : clave PUNTOS tipo
                 | clave PUNTOS ajson_t
         """
+
+        p[0] = {p[1]: p[3]}
     
     def p_clave(self, p):
         """
         clave : CCOMILLAS
                 | CSINCOMILLAS
         """
-    
-    
+        p[0] = p[1]
+
     def p_ajson(self, p):
         """
         ajson : LBRACKET object RBRACKET
         """
-    
+        p[0] = p[2]
+        print(p[0])
+
     def p_object(self, p):
         """
         object : pair COMA object
                | pair COMA
                | pair
         """
-    
+        if len(p) == 2 or len(p) == 3:
+            p[0] = p[1]
+        else:
+            p[0] = {**p[1], **p[3]}
+
     def p_pair(self, p):
         """
         pair : clave PUNTOS expr
         """
+        p[0] = {p[1]: p[3]}
+
     def p_punto(self, p):
         """
-        punto : CSINCOMILLAS PUNTO CSINCOMILLAS
-                | CSINCOMILLAS PUNTO punto
+        punto : p_punto1
+                | p_punto2
                 | CSINCOMILLAS PUNTO corchete
+        """
+        p[0] = p[1]
+    def p_punto1(self, p):
+        """
+        p_punto1 : CSINCOMILLAS PUNTO CSINCOMILLAS
+        """
+        p[0] = [self.simbolos.tabla[p[1]][1][p[3]][0], self.simbolos.tabla[p[1]][1][p[3]][1]]
+    
+    def p_punto2(self, p):
+        """
+        punto2 : CSINCOMILLAS PUNTO punto
         """
     def p_corchete(self, p):    
         """
@@ -495,3 +584,5 @@ class ParserClass:
         self.test(content)
         output_file = path + ".symbols"
         self.simbolos.guardar_tabla_simbolos(output_file)
+        output_file2 = path + ".register"
+        self.registros.guardar_tabla_registros(output_file2)

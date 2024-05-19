@@ -1,0 +1,2 @@
+Circulo, {'a': 'int', 'b': 'int', 'c': 'int', 'd': 'int'}
+Circulo2, {'a': 'int', 'b': 'int', 'c': 'int', 'd': {'a': 'int'}}

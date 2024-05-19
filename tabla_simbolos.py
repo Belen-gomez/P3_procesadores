@@ -1,21 +1,25 @@
+import sys
 class TablaSimbolos:
     def __init__(self):
         self.tabla = {}
 
     def agregar(self, nombre, tipo, valor):
         if nombre in self.tabla:
-            raise Exception(f"El simbolo {nombre} ya existe en la tabla de simbolos")
+           print(f"Error semántico: El simbolo {nombre} ya existe en la tabla de simbolos")
+           sys.exit(1)
         self.tabla[nombre] = [tipo, valor]
 
     def asignar(self, nombre, tipo, valor):
         if nombre not in self.tabla:
-            raise Exception(f"El simbolo {nombre} no existe en la tabla de simbolos")
+            print(f"Error semántico: El simbolo {nombre} no existe en la tabla de simbolos")
+            sys.exit(1)
         self.tabla[nombre][1] = valor
         self.tabla[nombre][0] = tipo
 
     def obtener(self, nombre):
         if nombre not in self.tabla:
-            raise Exception(f"El simbolo {nombre} no existe en la tabla de simbolos")
+           print(f"Error semántico: El simbolo {nombre} no existe en la tabla de simbolos")
+           sys.exit(1)
         return self.tabla[nombre][1], self.tabla[nombre][0]
 
     def __str__(self):

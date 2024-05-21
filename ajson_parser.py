@@ -3,6 +3,7 @@ from ajson_lexer import LexerClass
 import sys
 from tabla_simbolos import TablaSimbolos
 from tabla_registros import TablaRegistros
+from tabla_funciones import TablaFunciones
 
 class ParserClass:
     """
@@ -15,6 +16,8 @@ class ParserClass:
         self.lexer = LexerClass().lexer #se crea el lexer
         self.simbolos = TablaSimbolos() #se crea la tabla de simbolos
         self.registros = TablaRegistros() #se crea la tabla de registros
+        self.funciones = TablaFunciones()
+        self.ajson = {}
 
     # Define la precedencia y asociatividad de los operadores
     precedence = (
@@ -98,11 +101,6 @@ class ParserClass:
         declaration : LET id
         """ 
     
-    ''' def p_id_ajson(self, p):
-        """
-        id_ajson : var IGUAL ajson
-                    | var IGUAL ajson COMA id
-        """ '''
     def p_id(self, p):
         """
         id : var
@@ -117,21 +115,23 @@ class ParserClass:
                 self.simbolos.agregar(p[1][0], p[1][1], None)
                 p[0] = p[3]
             else:
-                print(p[0], p[1], p[3])
                 if(len(p[3]) == 2):
+
                     self.simbolos.agregar(p[1][0], p[3][1], p[3][0])
                 else:
                     if(not p[1][1]):
                         print("[parser] Parser error: Tipo no definido")
                         sys.exit(1)
-                       
+                    
                     #Esto indica que es un ajson y el tipo tiene que ser el que se ha declarado en la variables
                     self.registros.comprobar_estructura(p[1][1], p[3])
-                    self.simbolos.agregar(p[1][0], p[1][1], p[3][0])
+                    self.simbolos.agregar(p[1][0], p[1][1], p[3])
+                    self.anidar_claves(p[3],self.ajson,p[1][0])
+                    print(self.ajson)
         else:
-            print(p[0], p[1], p[3])
             if(len(p[3]) == 2):
                     self.simbolos.agregar(p[1][0], p[3][1], p[3])
+                    
             else:
                 if(not p[1][1]):
                     print("[parser] Parser error: Tipo no definido")
@@ -140,6 +140,8 @@ class ParserClass:
                 #Esto indica que es un ajson y el tipo tiene que ser el que se ha declarado en la variables
                 self.registros.comprobar_estructura(p[1][1], p[3])
                 self.simbolos.agregar(p[1][0], p[1][1], p[3])
+                self.anidar_claves(p[3],self.ajson,p[1][0])
+                print(self.ajson)
             p[0] = p[5]
         
     def p_var(self, p):
@@ -179,6 +181,8 @@ class ParserClass:
             valor, tipo = self.simbolos.obtener(p[1][0])   
             self.registros.comprobar_estructura(tipo, p[3])        
             self.simbolos.asignar(p[1][0], tipo, p[3])
+            self.anidar_claves(p[3],self.ajson,p[1][0])
+            print(self.ajson)
 
     def p_variable(self, p):
         """
@@ -220,8 +224,7 @@ class ParserClass:
               | cadena
               | ajson
               | parentesis
-              | punto
-              | corchete
+              | pc
               | functioncall
         """
         p[0] = p[1]
@@ -265,7 +268,7 @@ class ParserClass:
             else:
                 resultado_ascii = ord(p[1][0]) + ord(p[3][0])
                 p[0] = [chr(resultado_ascii %256), "character"]
-                print(p[0])
+
 
         elif p[2] == "-":
             if p[1][1] == "float" or p[3][1] == "float":
@@ -314,22 +317,40 @@ class ParserClass:
                     p[0] = [p[1][0] * p[3][0], "int"]
 
             else:
-                resultado_ascii = ord(p[1][0]) * ord(p[3][0])
-                p[0] = [chr(resultado_ascii %256), "character"]
+                print("[parser] Parser error: No se permite la multiplicación entre caracteres")
+                sys.exit(1)
         else:
+            if p[3][0] == 0:
+                print("[parser] Parser error: Division por cero")
+                sys.exit(1)
             if p[1][1] == "float" or p[3][1] == "float":
-                
-                if p[3][0] == 0:
-                    print("[parser] Parser error: Division por cero")
-                    sys.exit(1)
-                p[0] = [p[1][0] / p[3][0], "float"]
-                
-            else:
-                if p[3][0] == 0:
-                    print("[parser] Parser error: Division por cero")
-                    sys.exit(1)
+                if p[1][1] == "character":
+                    resultado_ascii = ord(p[1][0])
+                    p[0] = [resultado_ascii / p[3][0], "float"]
+                elif p[3][1] == "character":
+                    resultado_ascii = ord(p[3][0])
+                    if resultado_ascii == 0:
+                        print("[parser] Parser error: Division por cero")
+                        sys.exit(1)
+                    p[0] = [p[1][0]/resultado_ascii, "float"] 
                 else:
-                    p[0] = [p[1][0] / p[3][0], "int"]
+                    p[0] = [p[1][0] / p[3][0], "float"]
+                           
+            elif p[1][1] == "int" or p[3][1] == "int":
+                if p[1][1] == "character":
+                    resultado_ascii = ord(p[1][0])
+                    p[0] = [resultado_ascii // p[3][0], "int"]
+                elif p[3][1] == "character":
+                    resultado_ascii = ord(p[3][0])
+                    if resultado_ascii == 0:
+                        print("[parser] Parser error: Division por cero")
+                        sys.exit(1)
+                    p[0] = [p[1][0]//resultado_ascii, "int"]        
+                else:
+                    p[0] = [p[1][0] // p[3][0], "int"]
+            else:
+                print("[parser] Parser error: No se permite la division entre caracteres")
+                sys.exit(1)
 
 
     def p_binaria(self, p):
@@ -445,7 +466,7 @@ class ParserClass:
         ajson_t : LBRACKET object_t RBRACKET
         """
         p[0] = p[2]
-        print(p[0])
+
 
     def p_object_t(self, p):
         """
@@ -478,7 +499,7 @@ class ParserClass:
         ajson : LBRACKET object RBRACKET
         """
         p[0] = p[2]
-        print(p[0])
+
 
     def p_object(self, p):
         """
@@ -497,71 +518,154 @@ class ParserClass:
         """
         p[0] = {p[1]: p[3]}
 
-    def p_punto(self, p):
+    def p_punto_valor(self, p):
         """
-        punto : p_punto1
-                | p_punto2
-                | CSINCOMILLAS PUNTO corchete
+        punto_valor : punto1
+                    | punto2
+                    | punto_corchete
         """
         p[0] = p[1]
+
+    def p_pc(self, p):
+        """
+        pc : punto_valor
+            | corchete
+        """
+        p[0] = [self.ajson[p[1]][0], self.ajson[p[1]][1]]
+
+            
     def p_punto1(self, p):
         """
-        p_punto1 : CSINCOMILLAS PUNTO CSINCOMILLAS
+        punto1 : CSINCOMILLAS PUNTO CSINCOMILLAS    
         """
-        p[0] = [self.simbolos.tabla[p[1]][1][p[3]][0], self.simbolos.tabla[p[1]][1][p[3]][1]]
+        p[0] = p[1] + "." + p[3]
     
     def p_punto2(self, p):
         """
-        punto2 : CSINCOMILLAS PUNTO punto
+        punto2 : CSINCOMILLAS PUNTO punto_valor
         """
+        p[0] = p[1] + "." + p[3]
+    
+    def p_punto_corchete(self, p):
+        """
+        punto_corchete : CSINCOMILLAS PUNTO corchete
+        """
+        p[0] = p[1] + "." + p[3]
+
     def p_corchete(self, p):    
         """
         corchete : CSINCOMILLAS LCORCHETE CCOMILLAS RCORCHETE recur_corchete
         """
-    
+        if(p[5]):
+            p[0] = p[1] + "." + p[3] + "." + p[5]
+        else:
+            p[0] = p[1] + "." + p[3]
+        
     def p_recur_corchete(self, p):
         """
         recur_corchete : LCORCHETE CCOMILLAS RCORCHETE recur_corchete
                        | empty   
                        | PUNTO CSINCOMILLAS
-                       | PUNTO punto                   
+                       | PUNTO punto_valor                   
         """
+        if len(p) == 5:
+            if(p[4]):
+                p[0] = p[2] + "." + p[4]
+            else:
+                p[0] = p[2]
+        elif len(p) == 3:
+            p[0] = p[2]
+        else:
+            p[0] = None
     
     def p_condition(self, p):
         """
         condition : IF LPARENT expr RPARENT LBRACKET statement RBRACKET
                   | IF LPARENT expr RPARENT LBRACKET statement RBRACKET ELSE LBRACKET statement RBRACKET
         """
-    
+        if(p[3][1] != "bool"):
+            print("[parser] Parser error: La condición no es de tipo booleano")
+            sys.exit(1)
+
     def p_loop(self, p):
         """
         loop : WHILE LPARENT expr RPARENT LBRACKET statement RBRACKET
         """
+        if(p[3][1] != "bool"):
+            print("[parser] Parser error: La condición no es de tipo booleano")
+            sys.exit(1)
     
     def p_function(self, p):
         """
-        function : FUNCTION CSINCOMILLAS LPARENT RPARENT PUNTOS tipo LBRACKET statement RETURN expr SEMICOLON RBRACKET
-                 | FUNCTION CSINCOMILLAS LPARENT RPARENT PUNTOS tipo LBRACKET RETURN expr SEMICOLON RBRACKET
-                 | FUNCTION CSINCOMILLAS LPARENT arg_list RPARENT PUNTOS tipo LBRACKET statement RETURN expr SEMICOLON RBRACKET
-                 | FUNCTION CSINCOMILLAS LPARENT arg_list RPARENT PUNTOS tipo LBRACKET RETURN expr SEMICOLON RBRACKET
+        function : function_no_args
+                 | function_args
         """
+
+    def p_function_args(self, p):
+        """
+        function_args : FUNCTION CSINCOMILLAS LPARENT arg_list RPARENT PUNTOS tipo LBRACKET statement RETURN expr SEMICOLON RBRACKET
+                        | FUNCTION CSINCOMILLAS LPARENT arg_list RPARENT PUNTOS tipo LBRACKET RETURN expr SEMICOLON RBRACKET
+        """
+        if (len(p) == 14):
+            print(p[11])
+            if (p[7] != p[11][1]):
+                print("[parser] Parser error: El tipo de retorno no coincide con el tipo de la expresión")
+                sys.exit(1)
+        else:
+            print(p[10])
+            if (p[7] != p[10][1]):
+                print("[parser] Parser error: El tipo de retorno no coincide con el tipo de la expresión")
+                sys.exit(1)
+        self.funciones.agregar(p[2], p[4], p[7])
+
+    def p_function_no_args(self, p):
+        """
+        function_no_args : FUNCTION CSINCOMILLAS LPARENT RPARENT PUNTOS tipo LBRACKET statement RETURN expr SEMICOLON RBRACKET
+                            | FUNCTION CSINCOMILLAS LPARENT RPARENT PUNTOS tipo LBRACKET RETURN expr SEMICOLON RBRACKET
+        """
+        if (len(p) == 13):
+            if (p[6] != p[10][1]):
+                print("[parser] Parser error: El tipo de retorno no coincide con el tipo de la expresión")
+                sys.exit(1)
+        else:
+            if (p[6] != p[9][1]):
+                print("[parser] Parser error: El tipo de retorno no coincide con el tipo de la expresión")
+                sys.exit(1)
+
+        self.funciones.agregar(p[2], None, p[6])
+
     def p_arg_list(self, p):
         """
         arg_list : CSINCOMILLAS PUNTOS tipo
                  | CSINCOMILLAS PUNTOS tipo COMA arg_list
         """
+        if (len(p) ==4):
+            p[0] = [p[3]]
+        else:
+            p[0] = [p[3]] + p[5]
     
     def p_functioncall(self, p):
         """
         functioncall : CSINCOMILLAS LPARENT RPARENT 
                      | CSINCOMILLAS LPARENT argumentos RPARENT
         """
+        if len(p) == 4:
+            tipo = self.funciones.buscar(p[1])
+        else:
+            tipo = self.funciones.comprobar_argumentos(p[1], p[3])
+
+        p[0] = [None, tipo]
+
     def p_argumentos(self, p):
         """
         argumentos : expr
                    | expr COMA argumentos
         """
-    
+        if(len(p) == 2):
+            p[0] = [p[1][1]]
+        else:
+            p[0] = [p[1][1]] + p[3]
+
     def p_empty(self, p):
         """
         empty : 
@@ -575,6 +679,19 @@ class ParserClass:
             print("[parser] Parser error. At line:%s" % p)
         sys.exit(1)
         
+    
+    def anidar_claves(self, diccionario, diccionario_anidado, prefijo=''):
+        print(diccionario)
+        print("Prefijo: " + prefijo)
+        for clave, valor in diccionario.items():
+            nueva_clave = f'{prefijo}.{clave}' if prefijo else clave
+            if isinstance(valor, dict):
+                # Si el valor es un diccionario, se llama a la función recursivamente
+                self.anidar_claves(valor, diccionario_anidado, nueva_clave)
+            else:
+                # Si el valor no es un diccionario, se añade al diccionario de salida
+                diccionario_anidado[nueva_clave] = valor
+
     def test(self, data):
         self.parser.parse(data)
 
@@ -586,3 +703,5 @@ class ParserClass:
         self.simbolos.guardar_tabla_simbolos(output_file)
         output_file2 = path + ".register"
         self.registros.guardar_tabla_registros(output_file2)
+        output_file3 = path + ".function"
+        self.funciones.guardar_tabla_funciones(output_file3)

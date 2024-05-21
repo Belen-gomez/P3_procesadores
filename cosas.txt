@@ -10,3 +10,7 @@ En las divisiones con numeros enteros no tiene mucho sentido que el resultado se
 No se escriben los caracteres raros
 cuando se enlazan operaciones, si hay una operacion con carecteres primero, se tiene que hacer el modulo de la operacion y luego el resto?
 el not no funciona es raro
+
+
+//Explicar en la memoria
+- Operaciones y tipos

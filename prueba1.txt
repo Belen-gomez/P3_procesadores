@@ -5,14 +5,14 @@ let h = 2 / 1;
 b = '!' + '!'; 
 c = 'B' + 2.5;
 
-let d = a, e = 6, f = 'I';
+let d = a;
+let e = 6, f = 'I';
 e = 2 / 2.5;
-let i = b * e;
+let i = b /e;
 let k = ----3;
-let j = 'B' + '!' + 1;
+//let j = 'B' + '!' + 1;
 let z =  ('Z' +'Z') +  2 - 3;
 let l = 'Z'*5;
-l = l + 2 - 3;
 
 //binarias
 let m = tr;
@@ -33,9 +33,38 @@ let w = 3 >=9 && 3 <=1;
 //g = 0;
 
 type Circulo = {a:int, b:int, c:int, d:int};
-type Circulo2 = {a:int, b:int, c:int, d: {a:int}};
-let y: Circulo = {a:4, b:4, c:4, d:5}, bb;
+type Circulo2 = {a:int, b:int, c:int, j: {a:int}};
+let y: Circulo = {a:4, b:4, c:4, d:5};
 let aa: Circulo2;
 let cc:int;
-aa = {a:1, b:1, c:1, d: {a:9,}};
-cc = aa.d.a;
+aa = {a:1, b:1, c:1, j: {a: {a:1, b:111, c:1,}}};
+let dd = aa["j"]["a"].b;
+let tt = aa.a;
+
+//Condiciones y bucles
+
+if(m){
+    cc = 9;
+}
+else{
+    cc = 0;
+}
+
+
+while(6<7){
+    cc = 5;
+}
+
+//funciones
+function prueba3(a: int, b:int): int{
+ 
+    return 1;
+}
+
+function prueba3(): int{
+ 
+    return 1;
+}
+
+a = prueba3(3, 5);
+a = prueba3();

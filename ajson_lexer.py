@@ -5,7 +5,7 @@ class LexerClass:
     """
     Clase que define el lexer para el lenguaje ajson
     """
-    reserved = ("TR", "FL", "NULL", "LET", "INT", "FLOAT", "CHARACTER", "WHILE", "BOOLEAN", "FUNCTION", "RETURN", "TYPE", "IF", "ELSE") #palabras reservadas
+    reserved = ("TR", "FL", "NULL", "let", "INT", "FLOAT", "CHARACTER", "WHILE", "BOOLEAN", "FUNCTION", "RETURN", "TYPE", "IF", "ELSE") #palabras reservadas
 
     tokens = ("CCOMILLAS", "CSINCOMILLAS", "CARACTER",
               "ENTERO", "DECIMAL",
@@ -22,7 +22,7 @@ class LexerClass:
         self.reserved_map = {}
         for r in self.reserved: #se añaden las palabras reservadas al mapa, tanto en mayusculas como en minusculas
             self.reserved_map[r.upper()] = r
-            self.reserved_map[r.lower()] = r
+            #self.reserved_map[r.lower()] = r.lower()
         self.lexer = lex.lex(module=self)
 
 

@@ -1,4 +1,4 @@
-let a = 'B' + 'B' + 'B';
+LET a = 'B' + 'B' + 'B';
 let b:int;
 let c:float=8;
 let h = 2 / 1;
@@ -33,13 +33,15 @@ let w = 3 >=9 && 3 <=1;
 //g = 0;
 
 type Circulo = {a:int, b:int, c:int, d:int};
-type Circulo2 = {a:int, b:int, c:int, j: {a:int}};
+type Circulo2 = {a:int, b:int, c:int, j:  {a:int, b:int}};
 let y: Circulo = {a:4, b:4, c:4, d:5};
 let aa: Circulo2;
 let cc:int;
-aa = {a:1, b:1, c:1, j: {a: {a:1, b:111, c:1,}}};
-let dd = aa["j"]["a"].b;
+aa = {a:1, b:1, c:1, j: {a: 8, b: 7}};
+aa["j"].a = 'n';
+let dd = aa["j"]["a"];
 let tt = aa.a;
+//let xx = {a:1, b:1, c:1, j: {a: 8}};
 
 //Condiciones y bucles
 

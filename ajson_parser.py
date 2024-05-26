@@ -17,7 +17,6 @@ class ParserClass:
         self.simbolos = TablaSimbolos() #se crea la tabla de simbolos
         self.registros = TablaRegistros() #se crea la tabla de registros
         self.funciones = TablaFunciones()
-        self.ajson = {}
 
     # Define la precedencia y asociatividad de los operadores
     precedence = (
@@ -98,7 +97,7 @@ class ParserClass:
 
     def p_declaration(self, p):
         """
-        declaration : LET id
+        declaration : let id
         """ 
     
     def p_id(self, p):
@@ -126,8 +125,6 @@ class ParserClass:
                     #Esto indica que es un ajson y el tipo tiene que ser el que se ha declarado en la variables
                     self.registros.comprobar_estructura(p[1][1], p[3])
                     self.simbolos.agregar(p[1][0], p[1][1], p[3])
-                    self.anidar_claves(p[3],self.ajson,p[1][0])
-                    print(self.ajson)
         else:
             if(len(p[3]) == 2):
                     self.simbolos.agregar(p[1][0], p[3][1], p[3])
@@ -140,8 +137,6 @@ class ParserClass:
                 #Esto indica que es un ajson y el tipo tiene que ser el que se ha declarado en la variables
                 self.registros.comprobar_estructura(p[1][1], p[3])
                 self.simbolos.agregar(p[1][0], p[1][1], p[3])
-                self.anidar_claves(p[3],self.ajson,p[1][0])
-                print(self.ajson)
             p[0] = p[5]
         
     def p_var(self, p):
@@ -174,15 +169,19 @@ class ParserClass:
     def p_assignment(self, p):
         """
         assignment : var IGUAL expr
+                     | punto_valor IGUAL expr
+                     | corchete IGUAL expr
         """
         if(len(p[3]) == 2):
-            self.simbolos.asignar(p[1][0], p[3][1], p[3][0])
+            if(len(p[1]) == 2):
+                self.simbolos.asignar(p[1][0], p[3][1], p[3][0])
+            else:
+                print("Assignment: ", p[1])
+                self.simbolos.buscar_objeto(p[1], p[3][1], p[3][0])
         else:
             valor, tipo = self.simbolos.obtener(p[1][0])   
             self.registros.comprobar_estructura(tipo, p[3])        
             self.simbolos.asignar(p[1][0], tipo, p[3])
-            self.anidar_claves(p[3],self.ajson,p[1][0])
-            print(self.ajson)
 
     def p_variable(self, p):
         """
@@ -531,8 +530,8 @@ class ParserClass:
         pc : punto_valor
             | corchete
         """
-        p[0] = [self.ajson[p[1]][0], self.ajson[p[1]][1]]
-
+        valor, tipo =  self.simbolos.obtener_valor_objeto(p[1])
+        p[0] = [valor, tipo]
             
     def p_punto1(self, p):
         """
@@ -677,20 +676,8 @@ class ParserClass:
             print("[parser] Parser error. Valor: " + str(p))
         else:
             print("[parser] Parser error. At line:%s" % p)
-        sys.exit(1)
-        
+
     
-    def anidar_claves(self, diccionario, diccionario_anidado, prefijo=''):
-        print(diccionario)
-        print("Prefijo: " + prefijo)
-        for clave, valor in diccionario.items():
-            nueva_clave = f'{prefijo}.{clave}' if prefijo else clave
-            if isinstance(valor, dict):
-                # Si el valor es un diccionario, se llama a la función recursivamente
-                self.anidar_claves(valor, diccionario_anidado, nueva_clave)
-            else:
-                # Si el valor no es un diccionario, se añade al diccionario de salida
-                diccionario_anidado[nueva_clave] = valor
 
     def test(self, data):
         self.parser.parse(data)

@@ -1,0 +1,6 @@
+//Errores en Declaraciones y Operaciones
+
+let a;
+let a
+let b;
+a = 9;

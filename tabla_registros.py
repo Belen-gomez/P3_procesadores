@@ -35,7 +35,8 @@ class TablaRegistros:
                     print("Error semántico: Los tipos de la estructura no coincide con la definición")
                     sys.exit(1)
             else:
-                print("Error semántico: La estructura no es una lista")
+                print("Error semántico: Estrucutura no coincide con la definición")
+                sys.exit(1)
         
 
     

@@ -20,7 +20,7 @@ u, bool, tr
 v, bool, tr
 w, bool, fl
 y, Circulo, {'a': [4, 'int'], 'b': [4, 'int'], 'c': [4, 'int'], 'd': [5, 'int']}
-aa, Circulo2, {'a': [1, 'int'], 'b': [1, 'int'], 'c': [1, 'int'], 'j': {'a': {'a': [1, 'int'], 'b': [111, 'int'], 'c': [1, 'int']}}}
+aa, Circulo2, {'a': [1, 'int'], 'b': [1, 'int'], 'c': [1, 'int'], 'j': {'a': [9, 'int'], 'b': [7, 'int']}}
 cc, int, 5
-dd, int, 111
+dd, int, 9
 tt, int, 1

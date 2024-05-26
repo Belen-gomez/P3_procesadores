@@ -108,35 +108,51 @@ class ParserClass:
            | var IGUAL expr COMA id
         """
         if len(p) == 2:
-            self.simbolos.agregar(p[1][0], p[1][1], None)
+            res = self.simbolos.agregar(p[1][0], p[1][1], None)
+            if res == -1:
+                print(f"[error semántico] Error en la linea {p.lineno(2)}. Variable '{p[1][0]}' ya definida")
         elif len(p) == 4:
             if p[2] == ",":
-                self.simbolos.agregar(p[1][0], p[1][1], None)
+                res = self.simbolos.agregar(p[1][0], p[1][1], None)
+                if res == -1:
+                    print(f"[error semántico] Error en la linea {p.lineno(2)}. Variable '{p[1][0]}' ya definida")
                 p[0] = p[3]
             else:
-                if(len(p[3]) == 2):
-
-                    self.simbolos.agregar(p[1][0], p[3][1], p[3][0])
+                if(p[3] == None):
+                   pass
+                elif(len(p[3]) == 2):
+                    res = self.simbolos.agregar(p[1][0], p[3][1], p[3][0])
+                    if res == -1:
+                        print(f"[error semántico] Error en la linea {p.lineno(2)}. Variable '{p[1][0]}' ya definida")
                 else:
+
                     if(not p[1][1]):
                         print("[parser] Parser error: Tipo no definido")
-                        sys.exit(1)
+                    else:
                     
-                    #Esto indica que es un ajson y el tipo tiene que ser el que se ha declarado en la variables
-                    self.registros.comprobar_estructura(p[1][1], p[3])
-                    self.simbolos.agregar(p[1][0], p[1][1], p[3])
+                        #Esto indica que es un ajson y el tipo tiene que ser el que se ha declarado en la variables
+                        self.registros.comprobar_estructura(p[1][1], p[3])
+                        res = self.simbolos.agregar(p[1][0], p[1][1], p[3])
+                        if res == -1:
+                            print(f"[error semántico] Error en la linea {p.lineno(2)}. Variable '{p[1][0]}' ya definida")
         else:
-            if(len(p[3]) == 2):
-                    self.simbolos.agregar(p[1][0], p[3][1], p[3])
+            if(p[3] == None):
+                   pass
+            elif(len(p[3]) == 2):
+                res = self.simbolos.agregar(p[1][0], p[3][1], p[3][0])
+                if res == -1:
+                    print(f"[error semántico] Error en la linea {p.lineno(2)}. Variable '{p[1][0]}' ya definida")
                     
             else:
                 if(not p[1][1]):
                     print("[parser] Parser error: Tipo no definido")
-                    sys.exit(1)
+                else:
                     
-                #Esto indica que es un ajson y el tipo tiene que ser el que se ha declarado en la variables
-                self.registros.comprobar_estructura(p[1][1], p[3])
-                self.simbolos.agregar(p[1][0], p[1][1], p[3])
+                    #Esto indica que es un ajson y el tipo tiene que ser el que se ha declarado en la variables
+                    self.registros.comprobar_estructura(p[1][1], p[3])
+                    res = self.simbolos.agregar(p[1][0], p[1][1], p[3])
+                    if res == -1:
+                        print(f"[error semántico] Error en la linea {p.lineno(2)}. Variable '{p[1][0]}' ya definida")
             p[0] = p[5]
         
     def p_var(self, p):
@@ -174,21 +190,28 @@ class ParserClass:
         """
         if(len(p[3]) == 2):
             if(len(p[1]) == 2):
-                self.simbolos.asignar(p[1][0], p[3][1], p[3][0])
+                res = self.simbolos.asignar(p[1][0], p[3][1], p[3][0])
+                if res == -1:
+                    print(f"[error semántico] Error en la linea {p.lineno(2)}. Variable '{p[1][0]}' no definida")
             else:
                 print("Assignment: ", p[1])
                 self.simbolos.buscar_objeto(p[1], p[3][1], p[3][0])
         else:
             valor, tipo = self.simbolos.obtener(p[1][0])   
             self.registros.comprobar_estructura(tipo, p[3])        
-            self.simbolos.asignar(p[1][0], tipo, p[3])
+            res = self.simbolos.asignar(p[1][0], tipo, p[3])
+            if res == -1:
+                    print(f"[error semántico] Error en la linea {p.lineno(2)}. Variable '{p[1][0]}' no definida")
 
     def p_variable(self, p):
         """
         variable : CSINCOMILLAS
         """
         valor, tipo = self.simbolos.obtener(p[1])
-        p[0] = [valor, tipo]
+        if tipo==0:
+           print(f"[error semántico] Error en la linea {p.lineno(1)}. Variable '{p[1]}' no definida" )
+        else:
+            p[0] = [valor, tipo]
     
     def p_cadena(self, p):
         """
@@ -243,7 +266,9 @@ class ParserClass:
                    | expr MUL expr %prec MUL
                    | expr DIV expr %prec DIV
         """
-        if p[2] == "+":
+        if p[1]is None or p[3] is None:
+            pass
+        elif p[2] == "+":
             if p[1][1] == "float" or p[3][1] == "float":
                 if p[1][1] == "character":
                      resultado_ascii = ord(p[1][0])
@@ -316,12 +341,12 @@ class ParserClass:
                     p[0] = [p[1][0] * p[3][0], "int"]
 
             else:
-                print("[parser] Parser error: No se permite la multiplicación entre caracteres")
-                sys.exit(1)
+                print(f"[error semántico] Error en la liena {p.lineno(2)}: No se permite la multiplicación entre caracteres")
+
         else:
             if p[3][0] == 0:
-                print("[parser] Parser error: Division por cero")
-                sys.exit(1)
+                print(f"[error semántico] Error en la línea {p.lineno(2)}: Division por cero")
+
             if p[1][1] == "float" or p[3][1] == "float":
                 if p[1][1] == "character":
                     resultado_ascii = ord(p[1][0])
@@ -329,9 +354,9 @@ class ParserClass:
                 elif p[3][1] == "character":
                     resultado_ascii = ord(p[3][0])
                     if resultado_ascii == 0:
-                        print("[parser] Parser error: Division por cero")
-                        sys.exit(1)
-                    p[0] = [p[1][0]/resultado_ascii, "float"] 
+                        print(f"[error semántico] Error en la línea {p.lineno(2)}: Division por cero")
+                    else:
+                        p[0] = [p[1][0]/resultado_ascii, "float"] 
                 else:
                     p[0] = [p[1][0] / p[3][0], "float"]
                            
@@ -342,14 +367,14 @@ class ParserClass:
                 elif p[3][1] == "character":
                     resultado_ascii = ord(p[3][0])
                     if resultado_ascii == 0:
-                        print("[parser] Parser error: Division por cero")
-                        sys.exit(1)
-                    p[0] = [p[1][0]//resultado_ascii, "int"]        
+                        print(f"[error semántico] Error en la línea {p.lineno(2)}: Division por cero")
+                    else:
+                        p[0] = [p[1][0]//resultado_ascii, "int"]        
                 else:
                     p[0] = [p[1][0] // p[3][0], "int"]
             else:
-                print("[parser] Parser error: No se permite la division entre caracteres")
-                sys.exit(1)
+                print(f"[error semántico] Error en la liena {p.lineno(2)}: No se permite la división entre caracteres")
+
 
 
     def p_binaria(self, p):
@@ -358,28 +383,41 @@ class ParserClass:
                 | expr OR expr
                 | NOT expr
         """
+        
         if p[2] == "&&":
-            if p[1][1] == "bool" and p[3][1] == "bool":
-                p[0] = [p[1][0] and p[3][0], "bool"]
+            if(p[1] is None or p[3] is None):
+                pass
+            elif p[1][1] == "bool" and p[3][1] == "bool":
+                if (p[1][0] == "fl" or p[3][0] == "fl"):
+                    p[0] = ["fl", "bool"]
+                else:
+                    p[0] = ["tr", "bool"]
             else:
-                print("[parser] Parser error: Tipos no compatibles")
-                sys.exit(1)
+                print(f"[error semántico] Error en la líena {p.lineno(2)}: Tipos no compatibles")
+            
         elif p[2] == "||":
-            if p[1][1] == "bool" and p[3][1] == "bool":
-                p[0] = [p[1][0] or p[3][0], "bool"]
+            if(p[1] is None or p[3] is None):
+                pass
+            elif p[1][1] == "bool" and p[3][1] == "bool":
+                if (p[1][0] == "tr" or p[3][0] == "tr"):
+                    p[0] = ["tr", "bool"]
+                else:
+                    p[0] = ["fl", "bool"]
             else:
-                print("[parser] Parser error: Tipos no compatibles")
-                sys.exit(1)
+                print(f"[error semántico] Error en la líena {p.lineno(2)}: Tipos no compatibles")
+             
         else:
-            if p[2][1] == "bool":
+            if(p[2] is None):
+                pass
+            elif p[2][1] == "bool":
                 if p[2][0] == "tr":
                     p[0] = ["fl", "bool"]
                 else:
                     p[0] = ["tr", "bool"]
 
             else:
-                print("[parser] Parser error: Tipos no compatibles")
-                sys.exit(1)
+                print(f"[error semántico] Error en la líena {p.lineno(2)}: Tipos no compatibles")
+           
      
     def p_comparation(self, p):
         """
@@ -397,9 +435,8 @@ class ParserClass:
                     p[0] = ["fl", "bool"]
 
             elif p[1][1] == "bool" or p[3][1] == "bool":
-                print("[parser] Parser error: Tipos no compatibles")
-                sys.exit(1)
-            
+                print(f"[error semántcio] Error en la línea {p.lineno(2)}: Tipos no compatibles")
+
             else:
                 if p[1][1] == "character":
                     resultado1= ord(p[1][0])
@@ -417,40 +454,39 @@ class ParserClass:
             
         else:
             if p[1][1] == "bool" or p[3][1] == "bool":
-                print("[parser] Parser error: Tipos no compatibles")
-                sys.exit(1)
-            
-            if p[1][1] == "character":
-                resultado1= ord(p[1][0])
+                print(f"[error semántcio] Error en la línea {p.lineno(2)}: Tipos no compatibles")
             else:
-                resultado1 = p[1][0]
-                    
-            if p[3][1] == "character":
-                resultado3 = ord(p[3][0])
-            else:
-                resultado3 = p[3][0]
-            
-            if p[2] == "<":
-                if (resultado1 < resultado3):
-                    p[0] = ["tr", "bool"]
+                if p[1][1] == "character":
+                    resultado1= ord(p[1][0])
                 else:
-                    p[0] = ["fl", "bool"]
+                    resultado1 = p[1][0]
+                        
+                if p[3][1] == "character":
+                    resultado3 = ord(p[3][0])
+                else:
+                    resultado3 = p[3][0]
                 
-            elif p[2] == ">":
-                if (resultado1 > resultado3):
-                    p[0] = ["tr", "bool"]
+                if p[2] == "<":
+                    if (resultado1 < resultado3):
+                        p[0] = ["tr", "bool"]
+                    else:
+                        p[0] = ["fl", "bool"]
+                    
+                elif p[2] == ">":
+                    if (resultado1 > resultado3):
+                        p[0] = ["tr", "bool"]
+                    else:
+                        p[0] = ["fl", "bool"]
+                elif p[2] == "<=":
+                    if (resultado1 <= resultado3):
+                        p[0] = ["tr", "bool"]
+                    else:
+                        p[0] = ["fl", "bool"]
                 else:
-                    p[0] = ["fl", "bool"]
-            elif p[2] == "<=":
-                if (resultado1 <= resultado3):
-                    p[0] = ["tr", "bool"]
-                else:
-                    p[0] = ["fl", "bool"]
-            else:
-                if (resultado1 >= resultado3):
-                    p[0] = ["tr", "bool"]
-                else:
-                    p[0] = ["fl", "bool"]
+                    if (resultado1 >= resultado3):
+                        p[0] = ["tr", "bool"]
+                    else:
+                        p[0] = ["fl", "bool"]
                     
             
 
@@ -584,7 +620,6 @@ class ParserClass:
         """
         if(p[3][1] != "bool"):
             print("[parser] Parser error: La condición no es de tipo booleano")
-            sys.exit(1)
 
     def p_loop(self, p):
         """
@@ -592,7 +627,6 @@ class ParserClass:
         """
         if(p[3][1] != "bool"):
             print("[parser] Parser error: La condición no es de tipo booleano")
-            sys.exit(1)
     
     def p_function(self, p):
         """
@@ -609,12 +643,12 @@ class ParserClass:
             print(p[11])
             if (p[7] != p[11][1]):
                 print("[parser] Parser error: El tipo de retorno no coincide con el tipo de la expresión")
-                sys.exit(1)
+
         else:
             print(p[10])
             if (p[7] != p[10][1]):
                 print("[parser] Parser error: El tipo de retorno no coincide con el tipo de la expresión")
-                sys.exit(1)
+
         self.funciones.agregar(p[2], p[4], p[7])
 
     def p_function_no_args(self, p):
@@ -625,11 +659,11 @@ class ParserClass:
         if (len(p) == 13):
             if (p[6] != p[10][1]):
                 print("[parser] Parser error: El tipo de retorno no coincide con el tipo de la expresión")
-                sys.exit(1)
+ 
         else:
             if (p[6] != p[9][1]):
                 print("[parser] Parser error: El tipo de retorno no coincide con el tipo de la expresión")
-                sys.exit(1)
+
 
         self.funciones.agregar(p[2], None, p[6])
 
@@ -673,9 +707,9 @@ class ParserClass:
     
     def p_error(self, p):
         if not p:
-            print("[parser] Parser error. Valor: " + str(p))
+            print("[parser] Parser error. Error al final del archivo")
         else:
-            print("[parser] Parser error. At line:%s" % p)
+            print(f"[parser] Error sintáctico en la línea {p.lineno}, columna {p.lexpos}: token inesperado '{p.value}'")
 
     
 

@@ -22,7 +22,7 @@ class LexerClass:
         self.reserved_map = {}
         for r in self.reserved: #se añaden las palabras reservadas al mapa, tanto en mayusculas como en minusculas
             self.reserved_map[r.upper()] = r
-            #self.reserved_map[r.lower()] = r.lower()
+            self.reserved_map[r.lower()] = r
         self.lexer = lex.lex(module=self)
 
 

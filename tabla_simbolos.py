@@ -5,22 +5,22 @@ class TablaSimbolos:
 
     def agregar(self, nombre, tipo, valor):
         if nombre in self.tabla:
-           print(f"Error semántico: El simbolo {nombre} ya existe en la tabla de simbolos")
-           
-        self.tabla[nombre] = [tipo, valor]
+           return -1
+        else:   
+            self.tabla[nombre] = [tipo, valor]
 
     def asignar(self, nombre, tipo, valor):
         if nombre not in self.tabla:
-            print(f"Error semántico: El simbolo {nombre} no existe en la tabla de simbolos")
-            
-        self.tabla[nombre][1] = valor
-        self.tabla[nombre][0] = tipo
+            return -1
+        else:    
+            self.tabla[nombre][1] = valor
+            self.tabla[nombre][0] = tipo
 
     def obtener(self, nombre):
         if nombre not in self.tabla:
-           print(f"Error semántico: El simbolo {nombre} no existe en la tabla de simbolos")
-           
-        return self.tabla[nombre][1], self.tabla[nombre][0]
+           return 0, 0
+        else:   
+            return self.tabla[nombre][1], self.tabla[nombre][0]
     
     def buscar_objeto(self, nombre, tipo, valor):
         obj = self.tabla
@@ -28,19 +28,17 @@ class TablaSimbolos:
         for key in nombre.split('.'):
             
             if key not in obj:
-                print(f"Error semántico: El objeto {key} no existe en la tabla de simbolos")
-                sys.exit(1)
-            if cont == 0:
-                obj = obj[key][1]
-                cont += 1
+                print(f"[Error semántico] El objeto {key} no existe en la tabla de simbolos")
             else:
-                obj = obj[key]
-            print("Objeto: ", obj, "\n")
+                if cont == 0:
+                    obj = obj[key][1]
+                    cont += 1
+                else:
+                    obj = obj[key]
         if(obj[1] == tipo):
             obj[0] = valor
         else:
-            print(f"Error semántico: El objeto {key} no tiene ese tipo")
-            sys.exit(1)
+            print(f"[Error semántico] El objeto {key} no tiene ese tipo")
     
     def obtener_valor_objeto(self, nombre):
         obj = self.tabla
@@ -48,14 +46,13 @@ class TablaSimbolos:
         for key in nombre.split('.'):
             
             if key not in obj:
-                print(f"Error semántico: El objeto {key} no existe en la tabla de simbolos")
-                sys.exit(1)
-            if cont == 0:
-                obj = obj[key][1]
-                cont += 1
+                print(f"[Error semántico] El objeto {key} no existe en la tabla de simbolos")
             else:
-                obj = obj[key]
-            print("Objeto: ", obj, "\n")
+                if cont == 0:
+                    obj = obj[key][1]
+                    cont += 1
+                else:
+                    obj = obj[key]
         return obj[0], obj[1]
 
     def __str__(self):

@@ -1,0 +1,26 @@
+//Archivo de pruebas para cadenas de caracteres y vaolres booleanos
+tr
+fl
+null
+
+"HO la"
+" "
+""
+'h'
+' ' 
+''
+Hola
+Hola_2
+_Hola
+
+//Caracteres especiales
+"#@~"
+'$'
+
+//Comentarios
+/* Los comentarios se tienen que ignorar*/
+
+/* Los comentarios
+pueden tener
+
+varias lineas*/

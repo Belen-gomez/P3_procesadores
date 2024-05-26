@@ -1,0 +1,10 @@
+a, bool, tr
+b, bool, tr
+c, bool, tr
+d, bool, fl
+e, bool, tr
+f, bool, tr
+g, bool, fl
+h, bool, fl
+i, int, 9
+j, bool, tr

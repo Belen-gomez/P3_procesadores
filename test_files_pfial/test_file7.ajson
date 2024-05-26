@@ -1,0 +1,27 @@
+//Aritmeticas: sumas y restas
+
+let a = 2 +2; 
+let b = 9.5 - 2.5;
+let c = 1 +'c'; //resultado entero
+let d = 2.5 + 'b'; //resultado float
+let e = '!' + '!'; //resultado caracter
+let f =  ('Z' +'Z') +  2 - 3; //resultado entero
+let g = 2 - 5.5; //resultado float
+
+//Multiplicaciones
+let  h = 2*10;
+let i = 3 * '!'; //resultado entero
+let j = 2.5 * 'b'; //resultado float
+let k = 2.5 * 2.5; 
+
+//divisiones
+let l = 2.5/2;
+let m = 2.5/2.5;
+let n = '!'/2;
+let o = '!'/1.75;
+
+let p = 0b10 + 2 * 3; //se hacen primero las multiplicaciones
+let q = (0b10 + 2) * 3; //se hacen primero los paréntesis
+
+let r = h + i * l - (n/o);
+let s = 0xFF / (0b101 * ('c' - 1e-10));

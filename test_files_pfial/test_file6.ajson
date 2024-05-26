@@ -1,0 +1,11 @@
+//Delaraciones y asginaciones de tipos simples incorrectas
+
+a = 3;
+let b = 9;
+let d;
+let b = 'b';
+let d, let e;
+let f = g;
+let variable_correcta = 9;
+let h = b + 4 * B = 3 -7; //No se permite la asignacion de valores en medio de una expresion
+let c

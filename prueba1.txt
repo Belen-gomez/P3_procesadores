@@ -1,4 +1,4 @@
-LET a = 'B' + 'B' + 'B';
+let a = 'B' + 'B' + 'B';
 let b:int;
 let c:float=8;
 let h = 2 / 1;

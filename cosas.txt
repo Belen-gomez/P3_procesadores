@@ -14,3 +14,6 @@ el not no funciona es raro
 
 //Explicar en la memoria
 - Operaciones y tipos
+
+//Dudas
+- En el test 5, el tipo de f deberia ser None o null?

@@ -1,0 +1,4 @@
+//Comparaciones incorrectas
+let a  = tr > 3;
+let b = fl == 'C';
+let c = 3<4<2;

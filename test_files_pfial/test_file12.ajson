@@ -1,0 +1,6 @@
+//Binarias con errores
+let a = 3 && 3;
+let b = 'A' || 2;
+let c = !2.5;
+let d = e||f;
+let g = 9||3<4||'p'+'p';

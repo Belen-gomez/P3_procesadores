@@ -1,0 +1,6 @@
+//Aritemeticas con errores
+let e = b11 + f * g; //no definidas
+let a = 'B' * 'B'; 
+let b = 'C' / 'C';
+let d =  2 / 0;
+

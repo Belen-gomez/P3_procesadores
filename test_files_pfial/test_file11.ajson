@@ -1,0 +1,12 @@
+//operaciones binarias correctas
+let a = tr;
+let b = fl;
+let c = a && b; //falso
+let d = a || b; //verdadero
+let e = !a;
+let f = tr || fl;
+
+//Union de operaciones
+let g =  (3*9>9*9) || (2<3); //verdadero
+let h = (4+5)*10 == 4+5*10; //falso
+let i = (3<2 || 5<4) && 4>5; //falso

@@ -1,0 +1,12 @@
+//Comparaciones correctas
+let a = 2<3;
+let b = tr;
+let c = b == tr;
+let d = b == fl;
+let e = 'B' == 'B';
+let f = 2 == 2.0;
+let  g = 200 < 'B';
+let h = 30.5 >= '!';
+let i = 9;
+let j = 10;
+j = j>i;

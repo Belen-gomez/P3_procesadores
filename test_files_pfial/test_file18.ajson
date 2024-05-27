@@ -1,0 +1,57 @@
+//Funciones con errores
+let a=9, b=10;
+let temp=9, ab = 9;
+let c = get();
+
+function get(): int {
+    return 0;
+}
+
+function get(): int {
+    return 0;
+}
+
+let a = get(3);
+
+
+function mod(a: int, b: int): int {
+    if (a >= b) {
+        a = ab;
+    }
+    return a;
+}
+
+let c = mod(1.1, 2.2);
+
+function prueba(a: int, b: int): int {
+    return 2.2;
+}
+
+//Errores estruturales
+function prueba():int{
+    a = a+ b;
+} 
+
+function prueba2(a , b): int{
+    return a + b;
+}
+
+function prueba3(a: int b:int): int{
+    return a + b;
+}
+
+function prueba4(a: int,b:int){
+    return a + b;
+}
+
+let a = prueba(a:int,b:int);
+let a = prueba(int, int);
+prueba(a, b);
+
+//falta el ;
+function prueba3(a: int,b:int): int{
+    return a + b
+}
+
+function prueba3(a: int,b:int): int{
+    return a + b

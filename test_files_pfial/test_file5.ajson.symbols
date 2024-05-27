@@ -1,6 +1,8 @@
 b, character, a
 a, int, 170
-c, bool, tr
-f, int, None
+c, boolean, tr
+f, float, 0.1133333333333585
 e, int, 170
 d, character, p
+g, int, -9
+h, int, 8

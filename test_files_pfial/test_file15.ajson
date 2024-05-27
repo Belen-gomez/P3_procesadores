@@ -1,0 +1,31 @@
+//Condicionales correctos
+let a = 3, b1, b2, il;
+
+if (a ==3) {
+    b1 = tr;
+}
+
+if(b1){
+    let y = 9;
+}
+
+b2 = tr;
+il = 20;
+let f2 = 3;
+let f1 = 8;
+let le = 9;
+if (f2 == 3 || b1 && b2 || 10 -5 * il >= 0xFF *le-1) {
+    f2 = f2 - 3;
+}
+else {
+    f2 = 10+f1 * f1;
+}
+
+//Bucles correctos
+while (f2 == 3 || b1 && b2 || 10 -5 * il >= 0xFF *le-1) {
+    f2 = f2 - 3;
+}
+
+while (b1 && b2) {
+    f1 = f1 - 3;
+}

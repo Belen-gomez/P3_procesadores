@@ -1,0 +1,41 @@
+//Errores en ajson
+//No puede haber un ajson vacio
+type ajson = { };
+
+
+type NestedObject = { "this is": 3 * 3, prop2: int, "prop3": boolean };
+
+let a : AjsonNoDefinido = {a:6};
+
+type ejemplo = {a:int, b:float, "c": character};
+let a = {a : 5, b: 9.0, c:'r'};
+type ejemplo = {a:int, b:float};
+
+let a :ejemplo = {a:'r', b: 8.9, "c": 'y'};
+let b : ejemplo = {b: 8.9};
+let c :ejemplo = {error:8, b: 8.9, "c": 'y'};
+
+//Errores en las claves de un ajson
+type error = {
+    10: int,
+    tr: boolean,
+    +:character,
+}
+
+//Errores de estructura
+type error ={
+    x: +
+    y: 10
+    radio: 10
+};
+
+type error ={
+    x +,
+    y 10,
+    radio: 10
+};
+
+type error ={
+    x +,
+    y 10,
+    radio: 10

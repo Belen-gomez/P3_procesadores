@@ -6,5 +6,6 @@ b='a';
 c = tr; //Se puede cambiar el tipo de una variable
 
 let d = 'p', e = a, f:int;
-let e = -c;
-//let f = - '!';
+f = 0xFF/ (0b101 * (0702 - 1e-10));
+let g = ---9;
+let h = +-+-+8;

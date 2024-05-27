@@ -93,7 +93,7 @@ class ParserClass:
         bool : TR
              | FL
         """
-        p[0] = [p[1], "bool"]
+        p[0] = [p[1], "boolean"]
 
     def p_declaration(self, p):
         """
@@ -125,16 +125,20 @@ class ParserClass:
                     if res == -1:
                         print(f"[error semántico] Error en la linea {p.lineno(2)}. Variable '{p[1][0]}' ya definida")
                 else:
-
                     if(not p[1][1]):
-                        print("[parser] Parser error: Tipo no definido")
+                        print(f"[error semántico] Error en la linea {p.lineno(2)}: tipo de ajson no definido")
                     else:
-                    
+                        p[3] = p[3][0]
                         #Esto indica que es un ajson y el tipo tiene que ser el que se ha declarado en la variables
-                        self.registros.comprobar_estructura(p[1][1], p[3])
-                        res = self.simbolos.agregar(p[1][0], p[1][1], p[3])
-                        if res == -1:
-                            print(f"[error semántico] Error en la linea {p.lineno(2)}. Variable '{p[1][0]}' ya definida")
+                        err = self.registros.comprobar_estructura(p[1][1], p[3])
+                        if(err == 0):
+                            print(f"[error semántico] Error en la línea {p.lineno(2)}: La estructura no coincide con la definición")
+                        elif(err == 1):
+                            print(f"[error semántico] Error en la línea {p.lineno(2)}: Los tipos de la estructura no coincide con la definición")
+                        else:
+                            res = self.simbolos.agregar(p[1][0], p[1][1], p[3])
+                            if res == -1:
+                                print(f"[error semántico] Error en la linea {p.lineno(2)}. Variable '{p[1][0]}' ya definida")
         else:
             if(p[3] == None):
                    pass
@@ -145,9 +149,9 @@ class ParserClass:
                     
             else:
                 if(not p[1][1]):
-                    print("[parser] Parser error: Tipo no definido")
+                    print(f"[error semántico] Error en la linea {p.lineno(2)}: tipo de ajson no definido")
                 else:
-                    
+                    p[3] = p[3][0]
                     #Esto indica que es un ajson y el tipo tiene que ser el que se ha declarado en la variables
                     self.registros.comprobar_estructura(p[1][1], p[3])
                     res = self.simbolos.agregar(p[1][0], p[1][1], p[3])
@@ -188,15 +192,17 @@ class ParserClass:
                      | punto_valor IGUAL expr
                      | corchete IGUAL expr
         """
-        if(len(p[3]) == 2):
+        if(p[3] is None):
+            pass
+        elif(len(p[3]) == 2):
             if(len(p[1]) == 2):
                 res = self.simbolos.asignar(p[1][0], p[3][1], p[3][0])
                 if res == -1:
                     print(f"[error semántico] Error en la linea {p.lineno(2)}. Variable '{p[1][0]}' no definida")
             else:
-                print("Assignment: ", p[1])
                 self.simbolos.buscar_objeto(p[1], p[3][1], p[3][0])
         else:
+            p[3] = p[3][0]
             valor, tipo = self.simbolos.obtener(p[1][0])   
             self.registros.comprobar_estructura(tipo, p[3])        
             res = self.simbolos.asignar(p[1][0], tipo, p[3])
@@ -230,10 +236,13 @@ class ParserClass:
         signos : SUMA expr %prec USUMA
                | RESTA expr %prec URESTA
         """
-        if p[1] == "+":
-            p[0] = [p[2][0], p[2][1]]
+        if(p[2][1] == "int" or p[2][1] == "float"):
+            if p[1] == "+":
+                p[0] = [p[2][0], p[2][1]]
+            else:
+                p[0] = [-p[2][0], p[2][1]]
         else:
-            p[0] = [-p[2][0], p[2][1]]
+            print(f"[error semántico] Error en la liena {p.lineno(1)}: Tipos no compatibles")
     
     def p_expr(self, p):
         """
@@ -268,6 +277,8 @@ class ParserClass:
         """
         if p[1]is None or p[3] is None:
             pass
+        elif p[1][1] is None or p[3][1] is None:
+            print(f"[error semántico] Error en la línea {p.lineno(2)}: Tipos no compatibles")
         elif p[2] == "+":
             if p[1][1] == "float" or p[3][1] == "float":
                 if p[1][1] == "character":
@@ -347,7 +358,7 @@ class ParserClass:
             if p[3][0] == 0:
                 print(f"[error semántico] Error en la línea {p.lineno(2)}: Division por cero")
 
-            if p[1][1] == "float" or p[3][1] == "float":
+            elif p[1][1] == "float" or p[3][1] == "float":
                 if p[1][1] == "character":
                     resultado_ascii = ord(p[1][0])
                     p[0] = [resultado_ascii / p[3][0], "float"]
@@ -387,36 +398,42 @@ class ParserClass:
         if p[2] == "&&":
             if(p[1] is None or p[3] is None):
                 pass
-            elif p[1][1] == "bool" and p[3][1] == "bool":
+            elif p[1][1] is None or p[3][1] is None:
+                print(f"[error semántico] Error en la línea {p.lineno(2)}: Tipos no compatibles")
+            elif p[1][1] == "boolean" and p[3][1] == "boolean":
                 if (p[1][0] == "fl" or p[3][0] == "fl"):
-                    p[0] = ["fl", "bool"]
+                    p[0] = ["fl", "boolean"]
                 else:
-                    p[0] = ["tr", "bool"]
+                    p[0] = ["tr", "boolean"]
             else:
                 print(f"[error semántico] Error en la líena {p.lineno(2)}: Tipos no compatibles")
             
         elif p[2] == "||":
             if(p[1] is None or p[3] is None):
                 pass
-            elif p[1][1] == "bool" and p[3][1] == "bool":
+            elif p[1][1] is None or p[3][1] is None:
+                print(f"[error semántico] Error en la línea {p.lineno(2)}: Tipos no compatibles")
+            elif p[1][1] == "boolean" and p[3][1] == "boolean":
                 if (p[1][0] == "tr" or p[3][0] == "tr"):
-                    p[0] = ["tr", "bool"]
+                    p[0] = ["tr", "boolean"]
                 else:
-                    p[0] = ["fl", "bool"]
+                    p[0] = ["fl", "boolean"]
             else:
                 print(f"[error semántico] Error en la líena {p.lineno(2)}: Tipos no compatibles")
              
         else:
             if(p[2] is None):
                 pass
-            elif p[2][1] == "bool":
+            elif p[2][1] is None:
+                print(f"[error semántico] Error en la línea {p.lineno(2)}: Tipos no compatibles")
+            elif p[2][1] == "boolean":
                 if p[2][0] == "tr":
-                    p[0] = ["fl", "bool"]
+                    p[0] = ["fl", "boolean"]
                 else:
-                    p[0] = ["tr", "bool"]
+                    p[0] = ["tr", "boolean"]
 
             else:
-                print(f"[error semántico] Error en la líena {p.lineno(2)}: Tipos no compatibles")
+                print(f"[error semántico] Error en la líena {p.lineno(1)}: Tipos no compatibles")
            
      
     def p_comparation(self, p):
@@ -427,14 +444,17 @@ class ParserClass:
                     | expr GT expr
                     | expr EQ expr
         """
-        if p[2] == "==":
-            if p[1][1] == "bool" and p[3][1] == "bool":
-                if (p[1][0] == p[3][0]):
-                    p[0] = ["tr", "bool"]
-                else:
-                    p[0] = ["fl", "bool"]
+        if p[1]is None or p[3] is None:
+            pass
 
-            elif p[1][1] == "bool" or p[3][1] == "bool":
+        elif p[2] == "==":
+            if p[1][1] == "boolean" and p[3][1] == "boolean":
+                if (p[1][0] == p[3][0]):
+                    p[0] = ["tr", "boolean"]
+                else:
+                    p[0] = ["fl", "boolean"]
+
+            elif p[1][1] == "boolean" or p[3][1] == "boolean":
                 print(f"[error semántcio] Error en la línea {p.lineno(2)}: Tipos no compatibles")
 
             else:
@@ -448,12 +468,12 @@ class ParserClass:
                 else:
                     resultado3 = p[3][0]
                 if (resultado1 == resultado3):
-                    p[0] = ["tr", "bool"]
+                    p[0] = ["tr", "boolean"]
                 else:
-                    p[0] = ["fl", "bool"]
+                    p[0] = ["fl", "boolean"]
             
         else:
-            if p[1][1] == "bool" or p[3][1] == "bool":
+            if p[1][1] == "boolean" or p[3][1] == "boolean":
                 print(f"[error semántcio] Error en la línea {p.lineno(2)}: Tipos no compatibles")
             else:
                 if p[1][1] == "character":
@@ -468,25 +488,25 @@ class ParserClass:
                 
                 if p[2] == "<":
                     if (resultado1 < resultado3):
-                        p[0] = ["tr", "bool"]
+                        p[0] = ["tr", "boolean"]
                     else:
-                        p[0] = ["fl", "bool"]
+                        p[0] = ["fl", "boolean"]
                     
                 elif p[2] == ">":
                     if (resultado1 > resultado3):
-                        p[0] = ["tr", "bool"]
+                        p[0] = ["tr", "boolean"]
                     else:
-                        p[0] = ["fl", "bool"]
+                        p[0] = ["fl", "boolean"]
                 elif p[2] == "<=":
                     if (resultado1 <= resultado3):
-                        p[0] = ["tr", "bool"]
+                        p[0] = ["tr", "boolean"]
                     else:
-                        p[0] = ["fl", "bool"]
+                        p[0] = ["fl", "boolean"]
                 else:
                     if (resultado1 >= resultado3):
-                        p[0] = ["tr", "bool"]
+                        p[0] = ["tr", "boolean"]
                     else:
-                        p[0] = ["fl", "bool"]
+                        p[0] = ["fl", "boolean"]
                     
             
 
@@ -494,7 +514,10 @@ class ParserClass:
         """
         definicion_ajson : TYPE CSINCOMILLAS IGUAL ajson_t
         """
-        self.registros.agregar_registro(p[2], p[4])
+        
+        err = self.registros.agregar_registro(p[2], p[4])
+        if (err == False):
+            print(f"[error semántico] Error en la línea {p.lineno(2)}. El ajson '{p[2]}' ya existe")
 
     def p_ajson_t(self, p):
         """
@@ -533,7 +556,7 @@ class ParserClass:
         """
         ajson : LBRACKET object RBRACKET
         """
-        p[0] = p[2]
+        p[0] = [p[2]]
 
 
     def p_object(self, p):
@@ -618,15 +641,21 @@ class ParserClass:
         condition : IF LPARENT expr RPARENT LBRACKET statement RBRACKET
                   | IF LPARENT expr RPARENT LBRACKET statement RBRACKET ELSE LBRACKET statement RBRACKET
         """
-        if(p[3][1] != "bool"):
-            print("[parser] Parser error: La condición no es de tipo booleano")
+        if(p[3]):
+            if(p[3][1] != "boolean"):
+                print(f"[error semántico] Error en la línea {p.lineno(2)}: La condición no es de tipo booleano")
+        else:
+            print(f"[error semántico] Error en la línea {p.lineno(2)}: Variable de la condición no definida correctamente")
 
     def p_loop(self, p):
         """
         loop : WHILE LPARENT expr RPARENT LBRACKET statement RBRACKET
         """
-        if(p[3][1] != "bool"):
-            print("[parser] Parser error: La condición no es de tipo booleano")
+        if(p[3]):
+            if(p[3][1] != "boolean"):
+                print(f"[error semántico] Error en la línea {p.lineno(2)}: La condición del bucle no es de tipo booleano")
+        else:
+            print(f"[error semántico] Error en la línea {p.lineno(2)}: Variable de la condición del bucle no definida correctamente")
     
     def p_function(self, p):
         """
@@ -640,16 +669,16 @@ class ParserClass:
                         | FUNCTION CSINCOMILLAS LPARENT arg_list RPARENT PUNTOS tipo LBRACKET RETURN expr SEMICOLON RBRACKET
         """
         if (len(p) == 14):
-            print(p[11])
             if (p[7] != p[11][1]):
-                print("[parser] Parser error: El tipo de retorno no coincide con el tipo de la expresión")
+                print(f"[error semántico] Error en la líena {p.lineno(2)}: El tipo de retorno de la funcion '{p[2]}' no coincide con el tipo de la expresión")
 
         else:
-            print(p[10])
             if (p[7] != p[10][1]):
-                print("[parser] Parser error: El tipo de retorno no coincide con el tipo de la expresión")
+                print(f"[error semántico] Error en la líena {p.lineno(2)}: El tipo de retorno de la funcion '{p[2]}' no coincide con el tipo de la expresión")
 
-        self.funciones.agregar(p[2], p[4], p[7])
+        err = self.funciones.agregar(p[2], p[4], p[7])
+        if err==False:
+            print(f"[error semántico] Error en la línea {p.lineno(2)}: La función '{p[2]}' ya existe")
 
     def p_function_no_args(self, p):
         """
@@ -658,14 +687,16 @@ class ParserClass:
         """
         if (len(p) == 13):
             if (p[6] != p[10][1]):
-                print("[parser] Parser error: El tipo de retorno no coincide con el tipo de la expresión")
+                 print(f"[error semántico] Error en la líena {p.lineno(2)}: El tipo de retorno de la funcion '{p[2]}' no coincide con el tipo de la expresión")
  
         else:
             if (p[6] != p[9][1]):
-                print("[parser] Parser error: El tipo de retorno no coincide con el tipo de la expresión")
+                 print(f"[error semántico] Error en la líena {p.lineno(2)}: El tipo de retorno de la funcion '{p[2]}' no coincide con el tipo de la expresión")
 
 
-        self.funciones.agregar(p[2], None, p[6])
+        err = self.funciones.agregar(p[2], None, p[6])
+        if err == False:
+            print(f"[error semántico] Error en la línea {p.lineno(2)}: La función '{p[2]}' ya existe")
 
     def p_arg_list(self, p):
         """
@@ -686,8 +717,12 @@ class ParserClass:
             tipo = self.funciones.buscar(p[1])
         else:
             tipo = self.funciones.comprobar_argumentos(p[1], p[3])
-
-        p[0] = [None, tipo]
+        if tipo == False:
+            print(f"[error semántico] Error en la línea {p.lineno(1)}: La función '{p[1]}' no está definida")
+        elif tipo == 1:
+            print(f"[error semántico] Error en la línea {p.lineno(1)}: Los argumentos de la función '{p[1]}' no coinciden")
+        else:
+            p[0] = [None, tipo]
 
     def p_argumentos(self, p):
         """

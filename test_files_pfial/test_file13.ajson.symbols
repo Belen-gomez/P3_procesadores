@@ -1,0 +1,8 @@
+y, Circulo, {'a': [4, 'int'], 'b': [4, 'int'], 'c': [4, 'int']}
+circle, Circle, {'cx': [10.0, 'float'], 'cy': [11.5, 'float'], 'radius': [5.0, 'float'], 'color': ['r', 'character']}
+nested, NestedObject, {'this is': [10, 'int'], 'prop2': [20, 'int'], 'prop3': ['tr', 'boolean']}
+nested2, int, 3
+var1, var1, {'prop1': ['n', 'character'], 'prop2': ['b', 'character'], 'this is': [10, 'int'], 'nested': [20, 'int']}
+objeto, Object, {'prop1': [2.2, 'float'], 'nested': [{'this is': [10, 'int'], 'prop2': [20, 'int'], 'prop3': ['tr', 'boolean']}, 'NestedObject']}
+a, int, 4
+b, NestedObject, {'this is': [10, 'int'], 'prop2': [20, 'int'], 'prop3': ['tr', 'boolean']}

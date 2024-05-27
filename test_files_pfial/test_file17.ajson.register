@@ -1,0 +1,2 @@
+ajson, {'var1': 'boolean'}
+Point, {'x': 'int', 'y': 'int'}

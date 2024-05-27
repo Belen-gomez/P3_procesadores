@@ -7,9 +7,7 @@ class TablaFunciones:
     def agregar(self, nombre, args, tipo):
         for funcion in self.funciones:
             if nombre == funcion[0] and args == funcion[1]:
-                print(f"Error semántico: La función {nombre} ya existe en la tabla de funciones")
-                sys.exit(1)
-        
+                return False
         self.funciones.append([nombre, args, tipo])
         
     
@@ -22,16 +20,14 @@ class TablaFunciones:
         for funcion in self.funciones:
             if nombre == funcion[0]:
                 return funcion[2]
-        print(f"Error semántico: La función {nombre} no existe en la tabla de funciones")
-        sys.exit(1)
+        return False
+        
+        
     
     def comprobar_argumentos(self, nombre, argumentos):
         for funcion in self.funciones:
             if nombre == funcion[0]:
                 if argumentos != funcion[1]:
-                    print(f"Error semántico: Los argumentos de la función {nombre} no coinciden")
-                    sys.exit(1)
+                    return 1
                 return funcion[2]
-        print(f"Error semántico: La función {nombre} no existe en la tabla de funciones")
-        sys.exit(1)
-    
+        return False

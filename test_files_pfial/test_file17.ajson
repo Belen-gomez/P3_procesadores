@@ -1,0 +1,48 @@
+//funciones correctas
+//Declaración
+let a=9, b=10;
+let temp=9, ab = 9;
+function gte(a: int, b: int): boolean {
+    return a > b;
+}
+
+//Dentro de una funcion puede haber condicionales y bucles
+function mod(a: int, b: int): int {
+    if (a >= b) {
+        a = ab;
+    }
+    return a;
+}
+
+function greatest_common_divisor(a: int, b: int): int {
+    while (!(b == 0)) {
+        temp = b;
+        b=mod(a, b);
+        a = temp;
+    }
+    return a;
+}
+
+//Las fumciones pueden tener la lista de argumentos vacia
+function get(): int {
+    return 0;
+}
+
+//Llamadas a funciones
+let c = get();
+let d = gte(3, 4);
+
+type ajson = {var1 : boolean};
+let prueba:ajson = {var1: gte(3,4)};
+
+if(gte(3,4)){
+    let e = greatest_common_divisor(9, 10);
+}
+
+type Point = { x: int, y: int };
+let punto: Point = { x:3, y:4 };
+function get_point_after_jump(): Point {
+    return punto;
+}
+
+let result = get_point_after_jump();

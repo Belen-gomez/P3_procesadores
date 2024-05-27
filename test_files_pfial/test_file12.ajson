@@ -4,3 +4,6 @@ let b = 'A' || 2;
 let c = !2.5;
 let d = e||f;
 let g = 9||3<4||'p'+'p';
+let h = (a||b) > (3||4); //Se acepta en el sitáctico, no tiene sentido semántico
+let i = 'b' < a || 'c' < a || 'd';
+let j = !'h';

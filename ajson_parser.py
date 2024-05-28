@@ -714,7 +714,9 @@ class ParserClass:
         """
         res = True
         if (len(p) == 14):
-            if len(p[11]) == 2: #expr
+            if(p[11] == None):
+                pass
+            elif len(p[11]) == 2: #expr
                 if (p[7] != p[11][1]):
                     res = False
                     print(f"[error semántico] Error en la líena {p.lineno(2)}: El tipo de retorno de la funcion '{p[2]}' no coincide con el tipo de la expresión")
@@ -729,6 +731,8 @@ class ParserClass:
                     print(f"[error semántico] Error en la línea {p.lineno(2)}: Los tipos de la estructura no coincide con la definición")
                     res = False   
         else:
+            if(p[10] == None):
+                pass
             if len(p[10]) == 2:
                 if (p[7] != p[10][1]):
                     res = False

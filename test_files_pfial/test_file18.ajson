@@ -1,17 +1,17 @@
 //Funciones con errores
 let a=9, b=10;
 let temp=9, ab = 9;
-let c = get();
+let c = get(); //no definida
 
 function get(): int {
     return 0;
 }
 
-function get(): int {
+function get(): int { //repetida
     return 0;
 }
 
-let a = get(3);
+let a = get(3); //no deberia tener argumentos
 
 
 function mod(a: int, b: int): int {
@@ -21,13 +21,16 @@ function mod(a: int, b: int): int {
     return a;
 }
 
-let c = mod(1.1, 2.2);
+let c = mod(1.1, 2.2); //tipos de los argumentos incorrectos
 
-function prueba(a: int, b: int): int {
+function prueba(a: int, b: int): int { //tipo de devlucion incorrecto
     return 2.2;
 }
 
-
+function prueba3(a: int, b: int): int {
+    z = a +b; //Variable no definida
+    return z;
+}
 //Errores estruturales
 function prueba():int{
     a = a+ b;

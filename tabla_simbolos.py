@@ -12,6 +12,7 @@ class TablaSimbolos:
     def asignar(self, nombre, tipo, valor):
         if nombre not in self.tabla:
             return -1
+        
         else:    
             self.tabla[nombre][1] = valor
             self.tabla[nombre][0] = tipo

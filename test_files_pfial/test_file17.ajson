@@ -1,6 +1,6 @@
 //funciones correctas
 //Declaración
-//let a='b', b='p';
+
 let ab = 9;
 function gte(a: int, b: int): boolean {
     return a > b;
@@ -36,7 +36,7 @@ type ajson = {var1 : boolean};
 let prueba:ajson = {var1: gte(3,4)};
 
 if(gte(3,4)){
-    let e = greatest_common_divisor(9, 'p');
+    let e = greatest_common_divisor(9, 10);
 }
 
 type Point = { x: int, y: int };

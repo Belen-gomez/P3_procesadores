@@ -1,0 +1,2 @@
+punto, Point, {'x': [3, 'int'], 'y': [4, 'int']}
+result, Point, None

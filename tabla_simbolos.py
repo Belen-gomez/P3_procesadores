@@ -24,36 +24,40 @@ class TablaSimbolos:
     
     def buscar_objeto(self, nombre, tipo, valor):
         obj = self.tabla
+        num_puntos = nombre.count('.')
         cont = 0
         for key in nombre.split('.'):
-            
             if key not in obj:
-                print(f"[Error semántico] El objeto {key} no existe en la tabla de simbolos")
+                return 0    
             else:
                 if cont == 0:
                     obj = obj[key][1]
                     cont += 1
+                elif num_puntos - cont > 0:
+                    obj = obj[key][0]
+                    cont+=1
                 else:
                     obj = obj[key]
         if(obj[1] == tipo):
             obj[0] = valor
         else:
-            print(f"[Error semántico] El objeto {key} no tiene ese tipo")
+            return 1
+
     
     def obtener_valor_objeto(self, nombre):
-        print("Nombre " + nombre)
         obj = self.tabla
         cont = 0
-        for key in nombre.split('.'):
-            print(str(obj) + "\n")
-            print(key)
+        num_puntos = nombre.count('.')
+        for key in nombre.split('.'):    
             if key not in obj:
-                print(f"[Error semántico] El objeto {key} no existe en la tabla de simbolos")
+                return -1, -1
             else:
                 if cont == 0:
                     obj = obj[key][1]
-                    
                     cont += 1
+                elif num_puntos - cont > 0:
+                    obj = obj[key][0]
+                    cont+=1
                 else:
                     obj = obj[key]
         return obj[0], obj[1]

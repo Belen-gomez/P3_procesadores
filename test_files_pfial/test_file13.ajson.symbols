@@ -1,8 +1,12 @@
 y, Circulo, {'a': [4, 'int'], 'b': [4, 'int'], 'c': [4, 'int']}
-circle, Circle, {'cx': [10.0, 'float'], 'cy': [11.5, 'float'], 'radius': [5.0, 'float'], 'color': ['r', 'character']}
-nested, NestedObject, {'this is': [10, 'int'], 'prop2': [20, 'int'], 'prop3': ['tr', 'boolean']}
+circle, Circle, {'cx': [10.0, 'float'], 'cy': [11.5, 'float'], 'radius': [9.0, 'float'], 'color': ['r', 'character']}
+o, objeto2, {'prueba': [0, 'int']}
+nested, NestedObject, {'this is': [10, 'int'], 'prop2': [20, 'int'], 'prop3': [{'prueba': [0, 'int']}, 'objeto2']}
 nested2, int, 3
 var1, var1, {'prop1': ['n', 'character'], 'prop2': ['b', 'character'], 'this is': [10, 'int'], 'nested': [20, 'int']}
-objeto, Object, {'prop1': [2.2, 'float'], 'nested': [{'this is': [10, 'int'], 'prop2': [20, 'int'], 'prop3': ['tr', 'boolean']}, 'NestedObject']}
+objeto, Object, {'prop1': [2.2, 'float'], 'nested': [{'this is': [10, 'int'], 'prop2': [20, 'int'], 'prop3': [{'prueba': [0, 'int']}, 'objeto2']}, 'NestedObject']}
 a, int, 4
-b, NestedObject, {'this is': [10, 'int'], 'prop2': [20, 'int'], 'prop3': ['tr', 'boolean']}
+b, int, 0
+my_house, House, {'location': [{'city': ['M', 'character'], 'country': ['E', 'character']}], 'price': [{'euro': [100, 'int'], 'dollar': [108, 'int'], 'yen': [16397, 'int']}]}
+with_tax, float, 110.00000000000001
+euro_to_yen, float, 16397.0

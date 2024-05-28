@@ -25,9 +25,11 @@ class TablaFunciones:
         
     
     def comprobar_argumentos(self, nombre, argumentos):
+        valor = -1
         for funcion in self.funciones:
             if nombre == funcion[0]:
-                if argumentos != funcion[1]:
-                    return 1
-                return funcion[2]
-        return False
+                if argumentos == funcion[1]:
+                    return funcion[2]
+                else:
+                    valor = -2
+        return valor

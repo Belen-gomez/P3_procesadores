@@ -22,18 +22,30 @@ class TablaRegistros:
             definido = nombre
         else:
             definido = self.registros[nombre]
-
         if definido.keys() != estructura.keys():
             return 0
         else:
-            for clave in estructura:
-                if isinstance(estructura[clave], dict) and isinstance(definido[clave], dict):
-                    self.comprobar_estructura(definido[clave], estructura[clave])
-                elif isinstance(estructura[clave], list) and len(estructura[clave]) == 2:
-                    if estructura[clave][1] != definido[clave]:
-                        return 1
+            for clave in estructura:                
+                if isinstance(estructura[clave], list) and len(estructura[clave]) == 2:
+                    if isinstance(estructura[clave][0], dict):
+                         #ajson con tipo
+                         valor= self.comprobar_estructura(definido[clave], estructura[clave][0])
+                         if valor !=2:
+                            return valor
+                    else:
+                        #Es un valor normal, no es un ajson
+                        if estructura[clave][1] != definido[clave]:
+                            return 1
+                elif isinstance(estructura[clave], list) and len(estructura[clave]) == 1:
+                    #ajson sin tipo
+                    if isinstance(estructura[clave][0], dict):
+                        valor =  self.comprobar_estructura(definido[clave], estructura[clave][0])
+                        if valor !=2:
+                                return valor
+
                 else:
                         return 0
+        return 2
     def guardar_tabla_registros(self, archivo):
         with open(archivo, 'w') as f:
             for nombre, datos in self.registros.items():

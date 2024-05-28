@@ -1,0 +1,1 @@
+ajson_valido, ejemplo, {'a': [10, 'int'], 'b': [5.5, 'float'], 'c': ['o', 'character']}

@@ -17,6 +17,7 @@ class ParserClass:
         self.simbolos = TablaSimbolos() #se crea la tabla de simbolos
         self.registros = TablaRegistros() #se crea la tabla de registros
         self.funciones = TablaFunciones()
+        self.locales = {}
 
     # Define la precedencia y asociatividad de los operadores
     precedence = (
@@ -110,7 +111,7 @@ class ParserClass:
         if len(p) == 2:
             res = self.simbolos.agregar(p[1][0], p[1][1], None)
             if res == -1:
-                print(f"[error semántico] Error en la linea {p.lineno(2)}. Variable '{p[1][0]}' ya definida")
+                print(f"[error semántico] Error en la linea {p.lineno(0)}. Variable '{p[1][0]}' ya definida")
         elif len(p) == 4:
             if p[2] == ",":
                 res = self.simbolos.agregar(p[1][0], p[1][1], None)
@@ -131,6 +132,7 @@ class ParserClass:
                         p[3] = p[3][0]
                         #Esto indica que es un ajson y el tipo tiene que ser el que se ha declarado en la variables
                         err = self.registros.comprobar_estructura(p[1][1], p[3])
+
                         if(err == 0):
                             print(f"[error semántico] Error en la línea {p.lineno(2)}: La estructura no coincide con la definición")
                         elif(err == 1):
@@ -153,10 +155,16 @@ class ParserClass:
                 else:
                     p[3] = p[3][0]
                     #Esto indica que es un ajson y el tipo tiene que ser el que se ha declarado en la variables
-                    self.registros.comprobar_estructura(p[1][1], p[3])
-                    res = self.simbolos.agregar(p[1][0], p[1][1], p[3])
-                    if res == -1:
-                        print(f"[error semántico] Error en la linea {p.lineno(2)}. Variable '{p[1][0]}' ya definida")
+                    err = self.registros.comprobar_estructura(p[1][1], p[3])
+
+                    if(err == 0):
+                            print(f"[error semántico] Error en la línea {p.lineno(2)}: La estructura no coincide con la definición")
+                    elif(err == 1):
+                        print(f"[error semántico] Error en la línea {p.lineno(2)}: Los tipos de la estructura no coincide con la definición")
+                    else:
+                        res = self.simbolos.agregar(p[1][0], p[1][1], p[3])
+                        if res == -1:
+                            print(f"[error semántico] Error en la linea {p.lineno(2)}. Variable '{p[1][0]}' ya definida")
             p[0] = p[5]
         
     def p_var(self, p):
@@ -196,28 +204,62 @@ class ParserClass:
             pass
         elif(len(p[3]) == 2):
             if(len(p[1]) == 2):
-                res = self.simbolos.asignar(p[1][0], p[3][1], p[3][0])
-                if res == -1:
-                    print(f"[error semántico] Error en la linea {p.lineno(2)}. Variable '{p[1][0]}' no definida")
+                if p[1][0] not in self.locales.keys():
+                        res = self.simbolos.asignar(p[1][0], p[3][1], p[3][0])
+                        if res == -1:
+                            print(f"[error semántico] Error en la linea {p.lineno(1)}. Variable '{p[1]}' no definida" )
+                else:
+                    if self.locales[p[1][0]] == 'int':
+                        p[0] = [0, 'int']
+                    elif self.locales[p[1][0]] == 'float':
+                        p[0] = [0.0, 'float']
+                    elif self.locales[p[1][0]] == 'character':
+                        p[0] = ['a', 'character']
+                    elif self.locales[p[1][0]] == 'boolean':
+                        p[0] = ['tr', 'boolean']
+                    else:
+                        p[0] = [None, None]                    
             else:
-                self.simbolos.buscar_objeto(p[1], p[3][1], p[3][0])
+                err = self.simbolos.buscar_objeto(p[1], p[3][1], p[3][0])
+                if err == 0:
+                    print(f"[error semántico] Error en la línea {p.lineno(2)}: El objeto no existe en la tabla de simbolos")
+                elif err == 1:
+                    print(f"[error semántico] Error en la línea {p.lineno(2)}: Tipo de la variable no válido")
         else:
             p[3] = p[3][0]
             valor, tipo = self.simbolos.obtener(p[1][0])   
-            self.registros.comprobar_estructura(tipo, p[3])        
-            res = self.simbolos.asignar(p[1][0], tipo, p[3])
-            if res == -1:
-                    print(f"[error semántico] Error en la linea {p.lineno(2)}. Variable '{p[1][0]}' no definida")
+            err = self.registros.comprobar_estructura(tipo, p[3])  
+            if(err == 0):
+                print(f"[error semántico] Error en la línea {p.lineno(2)}: La estructura no coincide con la definición")
+            elif(err == 1):
+                print(f"[error semántico] Error en la línea {p.lineno(2)}: Los tipos de la estructura no coincide con la definición")
+            else:      
+                res = self.simbolos.asignar(p[1][0], tipo, p[3])
+                if res == -1:
+                        print(f"[error semántico] Error en la linea {p.lineno(2)}. Variable '{p[1][0]}' no definida")
 
     def p_variable(self, p):
         """
         variable : CSINCOMILLAS
         """
-        valor, tipo = self.simbolos.obtener(p[1])
-        if tipo==0:
-           print(f"[error semántico] Error en la linea {p.lineno(1)}. Variable '{p[1]}' no definida" )
+        if p[1] not in self.locales.keys():
+                valor, tipo = self.simbolos.obtener(p[1])
+                if tipo==0:
+                    print(f"[error semántico] Error en la linea {p.lineno(1)}. Variable '{p[1]}' no definida" )
+                else:
+                    p[0] = [valor, tipo]
         else:
-            p[0] = [valor, tipo]
+            if self.locales[p[1]] == 'int':
+                p[0] = [0, 'int']
+            elif self.locales[p[1]] == 'float':
+                p[0] = [0.0, 'float']
+            elif self.locales[p[1]] == 'character':
+                p[0] = ['a', 'character']
+            elif self.locales[p[1]] == 'boolean':
+                p[0] = ['tr', 'boolean']
+            else:
+                p[0] = [None, None]
+       
     
     def p_cadena(self, p):
         """
@@ -514,7 +556,6 @@ class ParserClass:
         """
         definicion_ajson : TYPE CSINCOMILLAS IGUAL ajson_t
         """
-        
         err = self.registros.agregar_registro(p[2], p[4])
         if (err == False):
             print(f"[error semántico] Error en la línea {p.lineno(2)}. El ajson '{p[2]}' ya existe")
@@ -590,7 +631,10 @@ class ParserClass:
             | corchete
         """
         valor, tipo =  self.simbolos.obtener_valor_objeto(p[1])
-        p[0] = [valor, tipo]
+        if tipo == -1:
+            print(f"[error semántico] Error en la línea {p.lineno(1)}: El objeto no existe en la tabla de simbolos")
+        else:
+            p[0] = [valor, tipo]
             
     def p_punto1(self, p):
         """
@@ -662,41 +706,89 @@ class ParserClass:
         function : function_no_args
                  | function_args
         """
-
+        
     def p_function_args(self, p):
         """
         function_args : FUNCTION CSINCOMILLAS LPARENT arg_list RPARENT PUNTOS tipo LBRACKET statement RETURN expr SEMICOLON RBRACKET
                         | FUNCTION CSINCOMILLAS LPARENT arg_list RPARENT PUNTOS tipo LBRACKET RETURN expr SEMICOLON RBRACKET
         """
+        res = True
         if (len(p) == 14):
-            if (p[7] != p[11][1]):
-                print(f"[error semántico] Error en la líena {p.lineno(2)}: El tipo de retorno de la funcion '{p[2]}' no coincide con el tipo de la expresión")
+            if len(p[11]) == 2: #expr
+                if (p[7] != p[11][1]):
+                    res = False
+                    print(f"[error semántico] Error en la líena {p.lineno(2)}: El tipo de retorno de la funcion '{p[2]}' no coincide con el tipo de la expresión")
+            else:
+                p[11] = p[11][0]
+                err = self.registros.comprobar_estructura(p[7], p[11])
 
+                if(err == 0):
+                    print(f"[error semántico] Error en la línea {p.lineno(2)}: La estructura no coincide con la definición")
+                    res = False
+                elif(err == 1):
+                    print(f"[error semántico] Error en la línea {p.lineno(2)}: Los tipos de la estructura no coincide con la definición")
+                    res = False   
         else:
-            if (p[7] != p[10][1]):
-                print(f"[error semántico] Error en la líena {p.lineno(2)}: El tipo de retorno de la funcion '{p[2]}' no coincide con el tipo de la expresión")
+            if len(p[10]) == 2:
+                if (p[7] != p[10][1]):
+                    res = False
+                    print(f"[error semántico] Error en la líena {p.lineno(2)}: El tipo de retorno de la funcion '{p[2]}' no coincide con el tipo de la expresión")
+            else:
+                p[10] = p[10][0]
+                err = self.registros.comprobar_estructura(p[7], p[10])
 
-        err = self.funciones.agregar(p[2], p[4], p[7])
-        if err==False:
-            print(f"[error semántico] Error en la línea {p.lineno(2)}: La función '{p[2]}' ya existe")
+                if(err == 0):
+                    print(f"[error semántico] Error en la línea {p.lineno(2)}: La estructura no coincide con la definición")
+                    res = False
+                elif(err == 1):
+                    print(f"[error semántico] Error en la línea {p.lineno(2)}: Los tipos de la estructura no coincide con la definición")
+                    res = False 
+            
+        if res != False:
+            err = self.funciones.agregar(p[2], p[4], p[7])
+            if err==False:
+                print(f"[error semántico] Error en la línea {p.lineno(2)}: La función '{p[2]}' ya existe")
 
     def p_function_no_args(self, p):
         """
         function_no_args : FUNCTION CSINCOMILLAS LPARENT RPARENT PUNTOS tipo LBRACKET statement RETURN expr SEMICOLON RBRACKET
                             | FUNCTION CSINCOMILLAS LPARENT RPARENT PUNTOS tipo LBRACKET RETURN expr SEMICOLON RBRACKET
         """
+        res = True
         if (len(p) == 13):
-            if (p[6] != p[10][1]):
-                 print(f"[error semántico] Error en la líena {p.lineno(2)}: El tipo de retorno de la funcion '{p[2]}' no coincide con el tipo de la expresión")
- 
+            if len(p[10]) == 2:
+                if (p[6] != p[10][1]):
+                    res = False
+                    print(f"[error semántico] Error en la líena {p.lineno(2)}: El tipo de retorno de la funcion '{p[2]}' no coincide con el tipo de la expresión")
+            else:
+                p[10] = p[10][0]
+                err = self.registros.comprobar_estructura(p[6], p[10])
+
+                if(err == 0):
+                    print(f"[error semántico] Error en la línea {p.lineno(2)}: La estructura no coincide con la definición")
+                    res = False
+                elif(err == 1):
+                    print(f"[error semántico] Error en la línea {p.lineno(2)}: Los tipos de la estructura no coincide con la definición")
+                    res = False   
         else:
-            if (p[6] != p[9][1]):
-                 print(f"[error semántico] Error en la líena {p.lineno(2)}: El tipo de retorno de la funcion '{p[2]}' no coincide con el tipo de la expresión")
+            if len(p[9]) == 2:
+                if (p[6] != p[9][1]):
+                    res = False
+                    print(f"[error semántico] Error en la líena {p.lineno(2)}: El tipo de retorno de la funcion '{p[2]}' no coincide con el tipo de la expresión")
+            else:
+                p[9] = p[9][0]
+                err = self.registros.comprobar_estructura(p[6], p[9])
 
-
-        err = self.funciones.agregar(p[2], None, p[6])
-        if err == False:
-            print(f"[error semántico] Error en la línea {p.lineno(2)}: La función '{p[2]}' ya existe")
+                if(err == 0):
+                    print(f"[error semántico] Error en la línea {p.lineno(2)}: La estructura no coincide con la definición")
+                    res = False
+                elif(err == 1):
+                    print(f"[error semántico] Error en la línea {p.lineno(2)}: Los tipos de la estructura no coincide con la definición")
+                    res = False  
+        if res != False:
+            err = self.funciones.agregar(p[2], None, p[6])
+            if err == False:
+                print(f"[error semántico] Error en la línea {p.lineno(2)}: La función '{p[2]}' ya existe")
 
     def p_arg_list(self, p):
         """
@@ -705,9 +797,11 @@ class ParserClass:
         """
         if (len(p) ==4):
             p[0] = [p[3]]
+            self.locales[p[1]] = p[3]
         else:
             p[0] = [p[3]] + p[5]
-    
+            self.locales[p[1]] = p[3]
+        
     def p_functioncall(self, p):
         """
         functioncall : CSINCOMILLAS LPARENT RPARENT 
@@ -717,9 +811,9 @@ class ParserClass:
             tipo = self.funciones.buscar(p[1])
         else:
             tipo = self.funciones.comprobar_argumentos(p[1], p[3])
-        if tipo == False:
+        if tipo == -1:
             print(f"[error semántico] Error en la línea {p.lineno(1)}: La función '{p[1]}' no está definida")
-        elif tipo == 1:
+        elif tipo == -2:
             print(f"[error semántico] Error en la línea {p.lineno(1)}: Los argumentos de la función '{p[1]}' no coinciden")
         else:
             p[0] = [None, tipo]
@@ -744,7 +838,7 @@ class ParserClass:
         if not p:
             print("[parser] Parser error. Error al final del archivo")
         else:
-            print(f"[parser] Error sintáctico en la línea {p.lineno}, columna {p.lexpos}: token inesperado '{p.value}'")
+            print(f"[parser] Error sintáctico en la línea {p.lineno}: token inesperado '{p.value}'")
 
     
 

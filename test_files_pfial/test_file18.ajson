@@ -27,6 +27,7 @@ function prueba(a: int, b: int): int {
     return 2.2;
 }
 
+
 //Errores estruturales
 function prueba():int{
     a = a+ b;

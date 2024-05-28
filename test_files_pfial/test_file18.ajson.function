@@ -1,3 +1,2 @@
 get, None, int
 mod, ['int', 'int'], int
-prueba, ['int', 'int'], int

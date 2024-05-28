@@ -1,0 +1,13 @@
+type Point = { x: int, y: int };
+let punto: Point = { x:3, y:4 };
+
+function get_point_after_jump(): Point {
+    return punto;
+}
+
+function get_point_after_jump(a:int): Point {
+    return { x:3, y:4 };
+}
+
+let result = get_point_after_jump();
+let result2 = get_point_after_jump('p');

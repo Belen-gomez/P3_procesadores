@@ -1,10 +1,8 @@
-b, int, None
-a, int, 10
 ab, int, 9
-temp, int, 10
+temp, int, 0
 c, int, None
 d, boolean, None
 prueba, ajson, {'var1': [None, 'boolean']}
-e, int, None
 punto, Point, {'x': [3, 'int'], 'y': [4, 'int']}
 result, Point, None
+result2, Point, None

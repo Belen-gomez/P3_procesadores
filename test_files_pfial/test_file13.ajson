@@ -1,10 +1,12 @@
 //Objetos correctos
 
 //Definicion de un ajson
+type objeto2 = {prueba: int};
 type Circle = {cx: float, cy: float, radius: float, color: character};
-type NestedObject = { "this is": int, prop2: int, "prop3": boolean} ;
+type NestedObject = { "this is": int, prop2: int, "prop3": objeto2} ;
 type Object = { prop1: float, "nested": NestedObject };
 type Circulo = {a:int, b:int, c:int};
+type ejemplo3 = {a:int, b:int, c : {a:int, b:int, c:int}} ;
 
 //Declaración de un ajson
 
@@ -18,8 +20,9 @@ let circle: Circle ={
 };
 
 //Reasignación de un ajson
-let nested : NestedObject = {"this is": 30, prop2: 20, "prop3": fl};
-nested = { "this is": 10, prop2: 20, "prop3": tr };
+let o: objeto2 = {prueba: 0};
+let nested : NestedObject = {"this is": 30, prop2: 20, "prop3": o};
+nested = { "this is": 10, prop2: 20, "prop3": o };
 
 
 type var1 = {prop1: character, prop2: character, "this is": int, "nested": int};
@@ -35,12 +38,11 @@ let objeto : Object = { prop1: 2.2, "nested": nested};
 
 //Notacion punto y notacion corchete
 let a = y.c;
-//circle.radius = 9.0;
+circle.radius = 9.0;
 
-let b = objeto.nested.prop2;
+let b = objeto.nested.prop3.prueba;
 
-//Mas ejemplos de ajson validos
-
+//Mas ejemplo correctos
 type House = {
     location: { city: character, country: character },
     price: { euro: int, dollar: int, yen: int }
@@ -51,7 +53,7 @@ let my_house: House = {
         city: 'M', country: 'E',
     },
     price: {
-        euro: 100, "dollar": 108, "yen": 16397
+        euro: 100, dollar: 108, yen: 16397
     },
 };
 let with_tax = my_house["price"].euro * 1.1;

@@ -1,4 +1,5 @@
 b, int, 10
-a, int, 19
+a, int, 9
 ab, int, 9
 temp, int, 9
+c, False, None

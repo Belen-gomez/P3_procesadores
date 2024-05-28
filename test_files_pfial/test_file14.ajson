@@ -8,12 +8,22 @@ type NestedObject = { "this is": 3 * 3, prop2: int, "prop3": boolean };
 let a : AjsonNoDefinido = {a:6};
 
 type ejemplo = {a:int, b:float, "c": character};
+
+let ajson_valido: ejemplo = {
+    a:10,
+    b: 5.5,
+    "c": 'o',
+};
+ajson_valido.a = 'c';
 let a = {a : 5, b: 9.0, c:'r'};
 type ejemplo = {a:int, b:float};
 
 let a :ejemplo = {a:'r', b: 8.9, "c": 'y'};
 let b : ejemplo = {b: 8.9};
 let c :ejemplo = {error:8, b: 8.9, "c": 'y'};
+let d = ajson.radio.var;
+ajson.radio.var = 9;
+
 
 //Errores en las claves de un ajson
 type error = {
@@ -39,3 +49,4 @@ type error ={
     x +,
     y 10,
     radio: 10
+

@@ -29,3 +29,11 @@ while (f2 == 3 || b1 && b2 || 10 -5 * il >= 0xFF *le-1) {
 while (b1 && b2) {
     f1 = f1 - 3;
 }
+
+//Con ajson
+type Point = { x: int, y: int };
+let punto: Point = { x:3, y:4 };
+
+if(punto.x<0){
+    let z = 9;
+}

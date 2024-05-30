@@ -1,5 +1,0 @@
-objeto2, {'prueba': 'int'}
-Circle, {'cx': 'float', 'cy': 'float', 'radius': 'float', 'color': 'character'}
-NestedObject, {'this is': 'int', 'prop2': 'int', 'prop3': 'objeto2'}
-Object, {'prop1': 'float', 'nested': 'NestedObject'}
-ejemplo3, {'a': 'int', 'b': 'int', 'c': {'a': 'int', 'b': 'int', 'c': 'int'}}

@@ -2,7 +2,8 @@
 //Declaración
 
 let ab = 9;
-function gte(a: int, b: int): boolean {
+
+function gte(a: int, b: int): boolean { //las variables a y b son argumentos, no tienen que estar declaradas
     return a > b;
 }
 
@@ -45,9 +46,26 @@ function get_point_after_jump(): Point {
     return punto;
 }
 
+function punto_ajson(): int{  
+    return punto.x;
+}
+let f = punto_ajson();
+
+function prueba(a:ajson): boolean{
+    return a.var1;
+}
+
 function get_point_after_jump(a:int): Point {
     return { x:3, y:4 };
 }
 
 let result = get_point_after_jump();
 let result2 = get_point_after_jump(3);
+
+if (gte(3, 4)) {
+    let result3 = get_point_after_jump();
+}
+
+while(gte(punto.x, 4)){
+    let result4 = get_point_after_jump();
+}

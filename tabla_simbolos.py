@@ -47,7 +47,7 @@ class TablaSimbolos:
             return 1
 
     
-    def obtener_valor_objeto(self, nombre):
+    def obtener_valor_objeto(self, nombre):          
         obj = self.tabla
         cont = 0
         num_puntos = nombre.count('.')

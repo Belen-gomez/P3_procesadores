@@ -28,20 +28,7 @@ class ParserClass:
         ('left', 'MUL', 'DIV'),
         ('left', 'USUMA', 'URESTA'),
     )
-
     
-    # El valor de laas variables no es importante cuenado haya control de flujo. 
-    # En el control de flujo, la solucion mas facil es que el tipo de la variable sea el ultimo, la mas dificil que se guarden varias variables o algo asi
-    # Tabla de registros para registrar tipos complejos, tener la plantilla de como son los objetos que el desarrollador crea y ver si cuando se cree uno sigue esa plantilla. Cuando se degina un tipo con la plabra type se mete en la tabal de registros. Caundo se declara un objeto se usa la tabla de registros para comprobar que sigue la estructura
-    # Ejemplo: tyoe point = {int: x, int: y}
-    #           type line = {a: Point, b: Point}
-    #           este es el caso mas facil. En la tabla de registros hay tipos y campos 
-    # Caso mas dificil: type line = {a: {x:int}, b: {y:int}}
-    # Funciones: se comprueba que la expresion en return se corresponde con el tipo de salida. Tambien se correspone que los argumentos coincidan en tipo con los registrados. Las funciones por lo tanto van en la tabla de registros
-    # Puede haber funciones con el mismo nombre pero distintos tipos o numeros de argumentos.
-    # Las funciones se pueden crear en una tabla de registros (es una clase) o crear una tabla de funciones
-    # En los tipos ir del menos restrictivo al mas restrictivo
-    # ¿La tabla de simbolos es una clase?
     def p_program(self, p):
         """
         program :  statement
@@ -109,23 +96,29 @@ class ParserClass:
            | var IGUAL expr COMA id
         """
         if len(p) == 2:
+            #se declara sin valor
             res = self.simbolos.agregar(p[1][0], p[1][1], None)
             if res == -1:
                 print(f"[error semántico] Error en la linea {p.lineno(0)}. Variable '{p[1][0]}' ya definida")
         elif len(p) == 4:
             if p[2] == ",":
+                #se declaran varias variables en una sola linea
                 res = self.simbolos.agregar(p[1][0], p[1][1], None)
                 if res == -1:
                     print(f"[error semántico] Error en la linea {p.lineno(2)}. Variable '{p[1][0]}' ya definida")
                 p[0] = p[3]
             else:
+                 #solo hay una variable pero con valor
                 if(p[3] == None):
+                   #error en la expresion
                    pass
                 elif(len(p[3]) == 2):
+                   #vairable simple
                     res = self.simbolos.agregar(p[1][0], p[3][1], p[3][0])
                     if res == -1:
                         print(f"[error semántico] Error en la linea {p.lineno(2)}. Variable '{p[1][0]}' ya definida")
                 else:
+                    #ajson
                     if(not p[1][1]):
                         print(f"[error semántico] Error en la linea {p.lineno(2)}: tipo de ajson no definido")
                     else:
@@ -143,13 +136,16 @@ class ParserClass:
                                 print(f"[error semántico] Error en la linea {p.lineno(2)}. Variable '{p[1][0]}' ya definida")
         else:
             if(p[3] == None):
+                   #error en la expresion
                    pass
             elif(len(p[3]) == 2):
+                #variable simple
                 res = self.simbolos.agregar(p[1][0], p[3][1], p[3][0])
                 if res == -1:
                     print(f"[error semántico] Error en la linea {p.lineno(2)}. Variable '{p[1][0]}' ya definida")
                     
             else:
+                #ajson
                 if(not p[1][1]):
                     print(f"[error semántico] Error en la linea {p.lineno(2)}: tipo de ajson no definido")
                 else:
@@ -175,6 +171,11 @@ class ParserClass:
         if len(p) == 2:
             p[0] =  [p[1], None]
         else:
+            #el tipo puede ser un ajson ya declarado o un tipo simple
+            err = self.registros.buscar(p[3])
+            if err == False:
+                if p[3] not in ["int", "float", "character", "boolean"]:
+                    print(f"[error semántico] Error en la línea {p.lineno(2)}: Tipo no válido")
             p[0] = [p[1], p[3]]
 
     def p_tipo_ajson(self, p):
@@ -201,14 +202,17 @@ class ParserClass:
                      | corchete IGUAL expr
         """
         if(p[3] is None):
+            #error en la expresion
             pass
         elif(len(p[3]) == 2):
+            #la expresión es un tipo simple 
             if(len(p[1]) == 2):
                 if p[1][0] not in self.locales.keys():
                         res = self.simbolos.asignar(p[1][0], p[3][1], p[3][0])
                         if res == -1:
                             print(f"[error semántico] Error en la linea {p.lineno(1)}. Variable '{p[1]}' no definida" )
                 else:
+                    #esto solo se hace cuando es un argumento de la funcion
                     if self.locales[p[1][0]] == 'int':
                         p[0] = [0, 'int']
                     elif self.locales[p[1][0]] == 'float':
@@ -218,7 +222,7 @@ class ParserClass:
                     elif self.locales[p[1][0]] == 'boolean':
                         p[0] = ['tr', 'boolean']
                     else:
-                        p[0] = [None, None]                    
+                        p[0] = [None, self.locales[p[1][0]]]                    
             else:
                 err = self.simbolos.buscar_objeto(p[1], p[3][1], p[3][0])
                 if err == 0:
@@ -228,6 +232,7 @@ class ParserClass:
                 elif err == -2:
                     print(f"[error semántico] Error en la línea {p.lineno(2)}: Error en la asignación, el objeto no ha sido inicializado")
         else:
+            #la expresión es un ajson. Hay que comprobar que la estrutura es correcta
             p[3] = p[3][0]
             valor, tipo = self.simbolos.obtener(p[1][0])   
             err = self.registros.comprobar_estructura(tipo, p[3])  
@@ -251,6 +256,7 @@ class ParserClass:
                 else:
                     p[0] = [valor, tipo]
         else:
+            #esto solo se hace cuando es un argumento de la funcion
             if self.locales[p[1]] == 'int':
                 p[0] = [0, 'int']
             elif self.locales[p[1]] == 'float':
@@ -260,7 +266,8 @@ class ParserClass:
             elif self.locales[p[1]] == 'boolean':
                 p[0] = ['tr', 'boolean']
             else:
-                p[0] = [None, None]
+                p[0] = [None, self.locales[p[1]]]
+                
        
     
     def p_cadena(self, p):
@@ -322,9 +329,12 @@ class ParserClass:
         if p[1]is None or p[3] is None:
             pass
         elif p[1][1] is None or p[3][1] is None:
+            #error en la expresion
             print(f"[error semántico] Error en la línea {p.lineno(2)}: Tipos no compatibles")
         elif p[1][0] is None or p[3][0] is None:
+            #error en la expresion
             print(f"[error semántico] Error en la línea {p.lineno(2)}: Variable sin valor. No se puede utilizar en una operacion")
+        
         elif p[2] == "+":
             if p[1][1] == "float" or p[3][1] == "float":
                 if p[1][1] == "character":
@@ -443,10 +453,13 @@ class ParserClass:
         
         if p[2] == "&&":
             if(p[1] is None or p[3] is None):
+                #error en la expresion
                 pass
             elif p[1][1] is None or p[3][1] is None:
+                #error en la expresion
                 print(f"[error semántico] Error en la línea {p.lineno(2)}: Tipos no compatibles")
             elif p[1][0] is None or p[3][0] is None:
+                #error en la expresion
                 print(f"[error semántico] Error en la línea {p.lineno(2)}: Variable sin valor. No se puede utilizar en una operacion")
             elif p[1][1] == "boolean" and p[3][1] == "boolean":
                 if (p[1][0] == "fl" or p[3][0] == "fl"):
@@ -458,10 +471,13 @@ class ParserClass:
             
         elif p[2] == "||":
             if(p[1] is None or p[3] is None):
+                #error en la expresion
                 pass
             elif p[1][1] is None or p[3][1] is None:
+                #error en la expresion
                 print(f"[error semántico] Error en la línea {p.lineno(2)}: Tipos no compatibles")
             elif p[1][0] is None or p[3][0] is None:
+                #error en la expresion
                 print(f"[error semántico] Error en la línea {p.lineno(2)}: Variable sin valor. No se puede utilizar en una operacion")
             elif p[1][1] == "boolean" and p[3][1] == "boolean":
                 if (p[1][0] == "tr" or p[3][0] == "tr"):
@@ -473,10 +489,13 @@ class ParserClass:
              
         else:
             if(p[2] is None):
+                #error en la expresion
                 pass
             elif p[2][1] is None:
+                #error en la expresion
                 print(f"[error semántico] Error en la línea {p.lineno(2)}: Tipos no compatibles")
             elif p[2][0] is None:
+                #error en la expresion
                 print(f"[error semántico] Error en la línea {p.lineno(2)}: Variable sin valor. No se puede utilizar en una operacion")
             elif p[2][1] == "boolean":
                 if p[2][0] == "tr":
@@ -497,10 +516,13 @@ class ParserClass:
                     | expr EQ expr
         """
         if p[1]is None or p[3] is None:
+            #error en la expresion
             pass
         elif p[1][1] is None or p[3][1] is None:
+                #error en la expresion
                 print(f"[error semántico] Error en la línea {p.lineno(2)}: Tipos no compatibles")
         elif p[1][0] is None or p[3][0] is None:
+            #error en la expresion
             print(f"[error semántico] Error en la línea {p.lineno(2)}: Variable sin valor. No se puede utilizar en una operacion")
 
         elif p[2] == "==":
@@ -571,6 +593,7 @@ class ParserClass:
         definicion_ajson : TYPE CSINCOMILLAS IGUAL ajson_t
         """
         if p[4] is not None:
+            #se guarda en la tabla de registros
             err = self.registros.agregar_registro(p[2], p[4])
             if (err == -1):
                 print(f"[error semántico] Error en la línea {p.lineno(2)}. El ajson '{p[2]}' ya existe")
@@ -596,6 +619,7 @@ class ParserClass:
         else:
             claves_comunes = set(p[1].keys()) & set(p[3].keys())
             if claves_comunes:
+                #no puede haber claves repetidas
                 print(f"[error semántico] Error en la línea {p.lineno(2)}: Claves repetidas en el ajson")
             else:
                 p[0] = {**p[1], **p[3]}
@@ -652,11 +676,19 @@ class ParserClass:
         pc : punto_valor
             | corchete
         """
-        valor, tipo =  self.simbolos.obtener_valor_objeto(p[1])
-        if tipo == -1:
-            print(f"[error semántico] Error en la línea {p.lineno(1)}: No se puede acceder a las claves del objeto")
+        tipo = 0;
+        if len(self.locales) != 0:
+            #obtener el valor de una clave si es un argumento de la funcion
+            tipo = self.registros.obtener_valor_objeto(p[1], self.locales)
+        if tipo == -1 or len(self.locales) == 0:
+            #si no es un argumento tiene que estar en la tabla de simbolos
+            valor, tipo =  self.simbolos.obtener_valor_objeto(p[1])
+            if tipo == -1:
+                print(f"[error semántico] Error en la línea {p.lineno(1)}: No se puede acceder a las claves del objeto")
+            else:
+                p[0] = [valor, tipo]
         else:
-            p[0] = [valor, tipo]
+            p[0] = [None, tipo]
             
     def p_punto1(self, p):
         """
@@ -709,8 +741,10 @@ class ParserClass:
         """
         if(p[3]):
             if(p[3][1] != "boolean"):
+                #solo se acpetan tipos booleanos
                 print(f"[error semántico] Error en la línea {p.lineno(2)}: La condición no es de tipo booleano")
         else:
+            #error en la expresion
             print(f"[error semántico] Error en la línea {p.lineno(2)}: Variable de la condición no definida correctamente")
 
     def p_loop(self, p):
@@ -719,8 +753,10 @@ class ParserClass:
         """
         if(p[3]):
             if(p[3][1] != "boolean"):
+                #solo se acpetan tipos booleanos
                 print(f"[error semántico] Error en la línea {p.lineno(2)}: La condición del bucle no es de tipo booleano")
         else:
+            #error en la expresion
             print(f"[error semántico] Error en la línea {p.lineno(2)}: Variable de la condición del bucle no definida correctamente")
     
     def p_function(self, p):
@@ -736,14 +772,18 @@ class ParserClass:
         """
         res = True
         if (len(p) == 14):
+            #hay statements
             if(p[11] == None):
+                #error en la expresion
                 pass
-            elif len(p[11]) == 2: #expr
+            elif len(p[11]) == 2: 
+                #el tipo de retorno es una variable simple o un ajson ya declarado
                 if (p[7] != p[11][1]):
                     res = False
                     print(f"[error semántico] Error en la líena {p.lineno(2)}: El tipo de retorno de la funcion '{p[2]}' no coincide con el tipo de la expresión")
             else:
                 p[11] = p[11][0]
+                #si el tipo de retorno es un ajson no declarado, se devuelve directamente el diccionario, hay que comprobar la estructura
                 err = self.registros.comprobar_estructura(p[7], p[11])
 
                 if(err == 0):
@@ -754,13 +794,16 @@ class ParserClass:
                     res = False   
         else:
             if(p[10] == None):
+                #error en la expresion
                 pass
-            if len(p[10]) == 2:
+            elif len(p[10]) == 2:
+                #el tipo de retorno es una variable simple o un ajson ya declarado
                 if (p[7] != p[10][1]):
                     res = False
                     print(f"[error semántico] Error en la líena {p.lineno(2)}: El tipo de retorno de la funcion '{p[2]}' no coincide con el tipo de la expresión")
             else:
                 p[10] = p[10][0]
+                 #si el tipo de retorno es un ajson no declarado, se devuelve directamente el diccionario, hay que comprobar la estructura
                 err = self.registros.comprobar_estructura(p[7], p[10])
 
                 if(err == 0):
@@ -782,7 +825,9 @@ class ParserClass:
         """
         res = True
         if (len(p) == 13):
-            if len(p[10]) == 2:
+            if (p[13] == None):
+                pass
+            elif len(p[10]) == 2:
                 if (p[6] != p[10][1]):
                     res = False
                     print(f"[error semántico] Error en la líena {p.lineno(2)}: El tipo de retorno de la funcion '{p[2]}' no coincide con el tipo de la expresión")
@@ -797,7 +842,9 @@ class ParserClass:
                     print(f"[error semántico] Error en la línea {p.lineno(2)}: Los tipos de la estructura no coincide con la definición")
                     res = False   
         else:
-            if len(p[9]) == 2:
+            if (p[9] == None):
+                pass
+            elif len(p[9]) == 2:
                 if (p[6] != p[9][1]):
                     res = False
                     print(f"[error semántico] Error en la líena {p.lineno(2)}: El tipo de retorno de la funcion '{p[2]}' no coincide con el tipo de la expresión")
@@ -821,6 +868,7 @@ class ParserClass:
         arg_list : CSINCOMILLAS PUNTOS tipo
                  | CSINCOMILLAS PUNTOS tipo COMA arg_list
         """
+        #se añaden los argumentos al diccionario de locales
         if (len(p) ==4):
             p[0] = [p[3]]
             self.locales[p[1]] = p[3]

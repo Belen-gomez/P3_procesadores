@@ -1,4 +1,0 @@
-my_house, House, {'location': [{'city': ['M', 'character'], 'country': ['E', 'character']}], 'price': [{'euro': [100, 'int'], 'dollar': [108, 'int'], 'yen': [16397, 'int']}]}
-with_tax, float, 110.00000000000001
-euro_to_yen, float, 16397.0
-cuadrado, Square, {'side': [10.0, 'float'], 'color': ['b', 'character']}

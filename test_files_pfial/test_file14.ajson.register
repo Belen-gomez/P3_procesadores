@@ -1,2 +1,0 @@
-House, {'location': {'city': 'character', 'country': 'character'}, 'price': {'euro': 'int', 'dollar': 'int', 'yen': 'int'}}
-Square, {'side': 'float', 'color': 'character'}

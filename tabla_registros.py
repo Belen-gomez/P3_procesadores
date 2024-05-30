@@ -58,6 +58,23 @@ class TablaRegistros:
                 else:
                         return 0
         return 2
+    
+    def obtener_valor_objeto(self, nombre, locales):
+        cont = 0
+        for key in nombre.split('.'):
+            if cont == 0:
+                if key in locales:
+                    obj = self.registros[locales[key]]
+                    cont += 1
+                else:
+                    return -1
+            elif key not in obj:   
+                return -1
+            else:
+              
+                obj = obj[key]
+        return obj
+
     def guardar_tabla_registros(self, archivo):
         with open(archivo, 'w') as f:
             for nombre, datos in self.registros.items():

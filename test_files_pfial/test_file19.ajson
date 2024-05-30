@@ -10,6 +10,9 @@ function get(): int {
 function get(): int { //repetida
     return 0;
 }
+function error(): character{
+    return 'c' * 'c';
+}
 
 let a = get(3); //no deberia tener argumentos
 
@@ -23,7 +26,7 @@ function mod(a: int, b: int): int {
 
 let c = mod(1.1, 2.2); //tipos de los argumentos incorrectos
 
-function prueba(a: int, b: int): int { //tipo de devlucion incorrecto
+function prueba(a: int, b: int): int { //tipo de devolucion incorrecto
     return 2.2;
 }
 
@@ -31,6 +34,13 @@ function prueba3(a: int, b: int): int {
     z = a +b; //Variable no definida
     return z;
 }
+
+type Point = { x: int, y: int };
+
+function get_point_after_jump(): Point {
+    return {x: 4};
+}
+
 //Errores estruturales
 function prueba():int{
     a = a+ b;

@@ -1,3 +1,0 @@
-get, None, int
-mod, ['int', 'int'], int
-prueba3, ['int', 'int'], int

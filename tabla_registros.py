@@ -4,11 +4,21 @@ class TablaRegistros:
     def __init__(self):
         self.registros = {}
 
-    def agregar_registro(self, clave, registro):
+    def agregar_registro(self, clave, registro, agregar = True):
         if clave in self.registros:
-            return False
-        else:         
-            self.registros[clave] = registro
+            return -1
+        
+        else:  
+            tipos = ["int", 'float', 'character', 'boolean']
+            for key in registro:
+                
+                if (isinstance(registro[key],dict)):
+                    self.agregar_registro(" ",registro[key], False)
+    
+                elif registro[key] not in self.registros and registro[key] not in tipos:  
+                    return -2
+            if agregar:
+                self.registros[clave] = registro
 
 
     def buscar(self, nombre):
@@ -21,6 +31,8 @@ class TablaRegistros:
         if isinstance(nombre, dict):
             definido = nombre
         else:
+            if nombre not in self.registros:
+                return 0
             definido = self.registros[nombre]
         if definido.keys() != estructura.keys():
             return 0

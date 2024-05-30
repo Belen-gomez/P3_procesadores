@@ -1,6 +1,0 @@
-gte, ['int', 'int'], boolean
-mod, ['int', 'int'], int
-greatest_common_divisor, ['int', 'int'], int
-get, None, int
-get_point_after_jump, None, Point
-get_point_after_jump, ['int'], Point

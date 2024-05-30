@@ -4,5 +4,5 @@ c, boolean, tr
 f, float, 0.1133333333333585
 e, int, 170
 d, character, p
-g, int, -9
+g, float, -9.2
 h, int, 8

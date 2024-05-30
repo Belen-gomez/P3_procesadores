@@ -6,4 +6,6 @@ let d =  2 / 0;
 let e = 2/0.0;
 let f;
 let g = 2*f; //f es tipo None
+let h:int;
+f = h*2;
 

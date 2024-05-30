@@ -28,6 +28,8 @@ class TablaSimbolos:
         num_puntos = nombre.count('.')
         cont = 0
         for key in nombre.split('.'):
+            if obj is None:
+                return -2
             if key not in obj:
                 return 0    
             else:

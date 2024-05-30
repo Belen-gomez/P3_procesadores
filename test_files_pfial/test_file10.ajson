@@ -1,6 +1,11 @@
 //Comparaciones incorrectas
 let a  = tr > 3;
 let b = fl == 'C';
+let i = fl == 8.8;
 let c = 3<4<2;
 let e == 'e';
 let d = < 'B';
+let f;
+let g = f<3;
+let h:int;
+f = h<3;

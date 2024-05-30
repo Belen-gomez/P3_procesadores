@@ -2,7 +2,4 @@ objeto2, {'prueba': 'int'}
 Circle, {'cx': 'float', 'cy': 'float', 'radius': 'float', 'color': 'character'}
 NestedObject, {'this is': 'int', 'prop2': 'int', 'prop3': 'objeto2'}
 Object, {'prop1': 'float', 'nested': 'NestedObject'}
-Circulo, {'a': 'int', 'b': 'int', 'c': 'int'}
 ejemplo3, {'a': 'int', 'b': 'int', 'c': {'a': 'int', 'b': 'int', 'c': 'int'}}
-var1, {'prop1': 'character', 'prop2': 'character', 'this is': 'int', 'nested': 'int'}
-House, {'location': {'city': 'character', 'country': 'character'}, 'price': {'euro': 'int', 'dollar': 'int', 'yen': 'int'}}

@@ -8,5 +8,7 @@ let f = tr || fl;
 
 //Union de operaciones
 let g =  (3*9>9*9) || (2<3); //verdadero
+let j =  3*9>9*9 || 2<3; //verdadero
 let h = (4+5)*10 == 4+5*10; //falso
-let i = (3<2 || 5<4) && 4>5; //falso
+let i = 6;
+i = 3<2 || 5<4 && 4>5; //falso

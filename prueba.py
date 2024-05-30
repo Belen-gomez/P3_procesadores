@@ -1,5 +1,4 @@
-c= 2
-a  = 2.0
+lista = ['a', 'b', 'c', 'd', 'e']
 
-
-print(c==a)
+if'a' not in lista:
+    print('a no está en la lista')

@@ -3,18 +3,16 @@
 //Definicion de un ajson
 type objeto2 = {prueba: int};
 type Circle = {cx: float, cy: float, radius: float, color: character};
-type NestedObject = { "this is": int, prop2: int, "prop3": objeto2} ;
-type Object = { prop1: float, "nested": NestedObject };
-type Circulo = {a:int, b:int, c:int};
-type ejemplo3 = {a:int, b:int, c : {a:int, b:int, c:int}} ;
+
+type NestedObject = { "this is": int, prop2: int, "prop3": objeto2} ; //Tieene otro ajson anidado
+type Object = { prop1: float, "nested": NestedObject }; //Tiene otro ajson anidado
+type ejemplo3 = {a:int, b:int, c : {a:int, b:int, c:int}} ; //Tiene otro ajson anidado pero este no tiene un tipo definido
 
 //Declaración de un ajson
 
-let y: Circulo = {a:4, b:4, c:4};
-
 let circle: Circle ={
     cx: 10.0,
-    cy: 11.5,
+    cy: 11.,
     radius: 5.0,
     color: 'r'
 };
@@ -22,40 +20,20 @@ let circle: Circle ={
 //Reasignación de un ajson
 let o: objeto2 = {prueba: 0};
 let nested : NestedObject = {"this is": 30, prop2: 20, "prop3": o};
-nested = { "this is": 10, prop2: 20, "prop3": o };
-
-
-type var1 = {prop1: character, prop2: character, "this is": int, "nested": int};
-let nested2= 3;
-let var1: var1 = {
-    prop1: 'n',
-   prop2: 'b',
-   "this is": 10,
-   "nested":20
-};
+nested = { "this is": 10, prop2: 20, "prop3":  o};
+let var2: NestedObject = { "this is": 10, prop2: 20, "prop3": {prueba: 10}};
 
 let objeto : Object = { prop1: 2.2, "nested": nested};
 
 //Notacion punto y notacion corchete
-let a = y.c;
+let a = circle.radius;
+let e = nested.prop3.prueba;
 circle.radius = 9.0;
-
 let b = objeto.nested.prop3.prueba;
+let d;
+d = var2.prop3.prueba;
+let c;
+c = circle.cx;
+circle.cx = circle.cx /2;
 
-//Mas ejemplo correctos
-type House = {
-    location: { city: character, country: character },
-    price: { euro: int, dollar: int, yen: int }
-};
 
-let my_house: House = {
-    location: {
-        city: 'M', country: 'E',
-    },
-    price: {
-        euro: 100, dollar: 108, yen: 16397
-    },
-};
-let with_tax = my_house["price"].euro * 1.1;
-let euro_to_yen = my_house.price["euro"] * 163.97;
-euro_to_yen = my_house.price["euro"] * 163.97;

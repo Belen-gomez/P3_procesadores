@@ -1,2 +1,0 @@
-get_point_after_jump, None, Point
-get_point_after_jump, ['int'], Point

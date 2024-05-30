@@ -1,52 +1,31 @@
-//Errores en Condicionales y bucles 
-let a;
-if(3){
-    a = 2;
-}
-if(8*9+'h'){
-    a = 2;
-}
-while(3){
-    a = 2;
-}
-while(8*9+'h'){
-    a = 2;
-}
-//No se puede asignar una variable a un condicional o un bucle
-a = if(a == 0){
-    a = 8;
-}
-else{
-    a = 0;
-}
-a  = while(a != 0) {
-    a = a - 1
+//Condicionales correctos
+let a = 3, b1, b2, il;
+
+if (a ==3) {
+    b1 = tr;
 }
 
-
-//Errores de estructura
-if(a == 0){
-    a = 1;
-}
-else{
-    a = 0;
-
-if a == 0{
-    a = 1;
+if(b1){
+    let y = 9;
 }
 
-if(a == 0){
-    a = 1;
-
-while(a == 0){
-    a = 1;
-
-
-whilea == 0{
-    a = 1;
+b2 = tr;
+il = 20;
+let f2 = 3;
+let f1 = 8;
+let le = 9;
+if (f2 == 3 || b1 && b2 || 10 -5 * il >= 0xFF *le-1) {
+    f2 = f2 - 3;
+}
+else {
+    f2 = 10+f1 * f1;
 }
 
-//Errores en las sentencias
-if(a == 0){
-    a = 1
+//Bucles correctos
+while (f2 == 3 || b1 && b2 || 10 -5 * il >= 0xFF *le-1) {
+    f2 = f2 - 3;
+}
+
+while (b1 && b2) {
+    f1 = f1 - 3;
 }

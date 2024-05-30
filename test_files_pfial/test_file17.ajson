@@ -1,53 +1,52 @@
-//funciones correctas
-//Declaración
-
-let ab = 9;
-function gte(a: int, b: int): boolean {
-    return a > b;
+//Errores en Condicionales y bucles 
+let a;
+if(3){
+    a = 2;
+}
+if(8*9+'h'){
+    a = 2;
+}
+while(3){
+    a = 2;
+}
+while(8*9+'h'){
+    a = 2;
+}
+//No se puede asignar una variable a un condicional o un bucle
+a = if(a == 0){
+    a = 8;
+}
+else{
+    a = 0;
+}
+a  = while(a != 0) {
+    a = a - 1
 }
 
-//Dentro de una funcion puede haber condicionales y bucles
-function mod(a: int, b: int): int {
-    if (a >= b) {
-        a = ab;
-    }
-    return a;
+
+//Errores de estructura
+if(a == 0){
+    a = 1;
+}
+else{
+    a = 0;
+
+if a == 0{
+    a = 1;
 }
 
-function greatest_common_divisor(a: int, b: int): int {
-    while (!(b == 0)) {
-        let temp = b;
-        b=mod(a, b);
-        a = temp;
-    }
-    return a;
+if(a == 0){
+    a = 1;
+
+while(a == 0){
+    a = 1;
+
+
+whilea == 0{
+    a = 1;
 }
 
-//Las fumciones pueden tener la lista de argumentos vacia
-function get(): int {
-    return 0;
+//Errores en las sentencias
+if(a == 0){
+    c = 1
 }
-
-//Llamadas a funciones
-let c = get();
-let d = gte(3, 4);
-
-type ajson = {var1 : boolean};
-let prueba:ajson = {var1: gte(3,4)};
-
-if(gte(3,4)){
-    let e = greatest_common_divisor(9, 10);
-}
-
-type Point = { x: int, y: int };
-let punto: Point = { x:3, y:4 };
-function get_point_after_jump(): Point {
-    return punto;
-}
-
-function get_point_after_jump(a:int): Point {
-    return { x:3, y:4 };
-}
-
-let result = get_point_after_jump();
-let result2 = get_point_after_jump(3);

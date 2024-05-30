@@ -1,0 +1,2 @@
+ejemplo, {'a': 'int', 'b': 'float', 'c': 'character', 'd': {'a': 'int', 'b': 'float'}}
+Square, {'side': 'float', 'color': 'character'}

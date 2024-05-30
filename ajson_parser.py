@@ -222,9 +222,11 @@ class ParserClass:
             else:
                 err = self.simbolos.buscar_objeto(p[1], p[3][1], p[3][0])
                 if err == 0:
-                    print(f"[error semántico] Error en la línea {p.lineno(2)}: El objeto no existe en la tabla de simbolos")
+                    print(f"[error semántico] Error en la línea {p.lineno(2)}: El objeto {p[3][1]} no existe en la tabla de simbolos")
                 elif err == 1:
                     print(f"[error semántico] Error en la línea {p.lineno(2)}: Tipo de la variable no válido")
+                elif err == -2:
+                    print(f"[error semántico] Error en la línea {p.lineno(2)}: Error en la asignación, el objeto no ha sido inicializado")
         else:
             p[3] = p[3][0]
             valor, tipo = self.simbolos.obtener(p[1][0])   
@@ -321,6 +323,8 @@ class ParserClass:
             pass
         elif p[1][1] is None or p[3][1] is None:
             print(f"[error semántico] Error en la línea {p.lineno(2)}: Tipos no compatibles")
+        elif p[1][0] is None or p[3][0] is None:
+            print(f"[error semántico] Error en la línea {p.lineno(2)}: Variable sin valor. No se puede utilizar en una operacion")
         elif p[2] == "+":
             if p[1][1] == "float" or p[3][1] == "float":
                 if p[1][1] == "character":
@@ -442,6 +446,8 @@ class ParserClass:
                 pass
             elif p[1][1] is None or p[3][1] is None:
                 print(f"[error semántico] Error en la línea {p.lineno(2)}: Tipos no compatibles")
+            elif p[1][0] is None or p[3][0] is None:
+                print(f"[error semántico] Error en la línea {p.lineno(2)}: Variable sin valor. No se puede utilizar en una operacion")
             elif p[1][1] == "boolean" and p[3][1] == "boolean":
                 if (p[1][0] == "fl" or p[3][0] == "fl"):
                     p[0] = ["fl", "boolean"]
@@ -455,6 +461,8 @@ class ParserClass:
                 pass
             elif p[1][1] is None or p[3][1] is None:
                 print(f"[error semántico] Error en la línea {p.lineno(2)}: Tipos no compatibles")
+            elif p[1][0] is None or p[3][0] is None:
+                print(f"[error semántico] Error en la línea {p.lineno(2)}: Variable sin valor. No se puede utilizar en una operacion")
             elif p[1][1] == "boolean" and p[3][1] == "boolean":
                 if (p[1][0] == "tr" or p[3][0] == "tr"):
                     p[0] = ["tr", "boolean"]
@@ -468,6 +476,8 @@ class ParserClass:
                 pass
             elif p[2][1] is None:
                 print(f"[error semántico] Error en la línea {p.lineno(2)}: Tipos no compatibles")
+            elif p[2][0] is None:
+                print(f"[error semántico] Error en la línea {p.lineno(2)}: Variable sin valor. No se puede utilizar en una operacion")
             elif p[2][1] == "boolean":
                 if p[2][0] == "tr":
                     p[0] = ["fl", "boolean"]
@@ -488,6 +498,10 @@ class ParserClass:
         """
         if p[1]is None or p[3] is None:
             pass
+        elif p[1][1] is None or p[3][1] is None:
+                print(f"[error semántico] Error en la línea {p.lineno(2)}: Tipos no compatibles")
+        elif p[1][0] is None or p[3][0] is None:
+            print(f"[error semántico] Error en la línea {p.lineno(2)}: Variable sin valor. No se puede utilizar en una operacion")
 
         elif p[2] == "==":
             if p[1][1] == "boolean" and p[3][1] == "boolean":
@@ -556,9 +570,12 @@ class ParserClass:
         """
         definicion_ajson : TYPE CSINCOMILLAS IGUAL ajson_t
         """
-        err = self.registros.agregar_registro(p[2], p[4])
-        if (err == False):
-            print(f"[error semántico] Error en la línea {p.lineno(2)}. El ajson '{p[2]}' ya existe")
+        if p[4] is not None:
+            err = self.registros.agregar_registro(p[2], p[4])
+            if (err == -1):
+                print(f"[error semántico] Error en la línea {p.lineno(2)}. El ajson '{p[2]}' ya existe")
+            elif (err ==-2):
+                print(f"[error semántico] Error en la línea {p.lineno(2)}. Tipos del ajson no válidos")
 
     def p_ajson_t(self, p):
         """
@@ -573,10 +590,15 @@ class ParserClass:
                  | pair_t COMA
                  | pair_t
         """
+       
         if len(p) == 2 or len(p) == 3:
             p[0] = p[1]
         else:
-            p[0] = {**p[1], **p[3]}
+            claves_comunes = set(p[1].keys()) & set(p[3].keys())
+            if claves_comunes:
+                print(f"[error semántico] Error en la línea {p.lineno(2)}: Claves repetidas en el ajson")
+            else:
+                p[0] = {**p[1], **p[3]}
 
     def p_pair_t(self, p):
         """
@@ -632,7 +654,7 @@ class ParserClass:
         """
         valor, tipo =  self.simbolos.obtener_valor_objeto(p[1])
         if tipo == -1:
-            print(f"[error semántico] Error en la línea {p.lineno(1)}: El objeto no existe en la tabla de simbolos")
+            print(f"[error semántico] Error en la línea {p.lineno(1)}: No se puede acceder a las claves del objeto")
         else:
             p[0] = [valor, tipo]
             

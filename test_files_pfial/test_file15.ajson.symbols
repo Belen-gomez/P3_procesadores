@@ -1,8 +1,2 @@
-il, int, 20
-b2, boolean, tr
-b1, boolean, tr
-a, int, 3
-y, int, 9
-f2, int, 71
-f1, int, 5
-le, int, 9
+ajson_valido, ejemplo, {'a': [10, 'int'], 'b': [5.5, 'float'], 'c': ['o', 'character'], 'd': [{'a': [1, 'int'], 'b': [2.2, 'float']}]}
+cuadrado, Square, None

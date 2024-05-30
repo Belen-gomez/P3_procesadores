@@ -13,7 +13,9 @@ l, float, 1.25
 m, float, 1.0
 n, int, 16
 o, float, 18.857142857142858
+u, int, 2
 p, int, 8
 q, int, 12
 r, float, 142.90151515151516
 s, float, 0.5151515151520355
+t, int, 7

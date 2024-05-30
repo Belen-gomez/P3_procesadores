@@ -1,31 +1,68 @@
-//Condicionales correctos
-let a = 3, b1, b2, il;
+//Errores en ajson
+//No puede haber un ajson vacio
+type ajson = { };
 
-if (a ==3) {
-    b1 = tr;
+//errores en los tipos
+type NestedObject = { "this is": 3 * 3, prop2: int, "prop3": boolean }; 
+type NestedObject = { "this is": nada, prop2: int, "prop3": boolean }; 
+type claves_repetidas = {cx:int, cx:int, cy:int,};
+let a : AjsonNoDefinido = {a:6};
+
+type ejemplo = {a:int, b:float, "c": character, d:{a:int, b:float,}};
+
+let ajson_valido: ejemplo = {
+    a:10,
+    b: 5.5,
+    "c": 'o',
+    d: {a:1, b:2.2}
+};
+
+let no_ajson_valido: ejemplo = {
+    a:10,
+    b: 5.5,
+    "c": 'o',
+    d: {b:2.2}
+};
+
+ajson_valido = {a: 5, b: 9.0, c:9};
+ajson_valido.a = 'c';
+let a = {a : 5, b: 9.0, c:'r'};
+type ejemplo = {a:int, b:float};
+
+let a :ejemplo = {a:'r', b: 8.9, "c": 'y'};
+let b : ejemplo = {b: 8.9};
+let c :ejemplo = {error:8, b: 8.9, "c": 'y'};
+let d = ajson.radio.var;
+ajson.radio.var = 9;
+
+type Square = {side:float, color: character};
+
+let cuadrado: Square;
+cuadrado.side = 10.;
+
+
+//Errores en las claves de un ajson
+type error = {
+    10: int,
+    tr: boolean,
+    +:character,
 }
 
-if(b1){
-    let y = 9;
-}
+//Errores de estructura
+type error ={
+    x: +
+    y: 10
+    radio: 10
+};
 
-b2 = tr;
-il = 20;
-let f2 = 3;
-let f1 = 8;
-let le = 9;
-if (f2 == 3 || b1 && b2 || 10 -5 * il >= 0xFF *le-1) {
-    f2 = f2 - 3;
-}
-else {
-    f2 = 10+f1 * f1;
-}
+type error ={
+    x +,
+    y 10,
+    radio: 10
+};
 
-//Bucles correctos
-while (f2 == 3 || b1 && b2 || 10 -5 * il >= 0xFF *le-1) {
-    f2 = f2 - 3;
-}
+type error ={
+    x +,
+    y 10,
+    radio: 10
 
-while (b1 && b2) {
-    f1 = f1 - 3;
-}
